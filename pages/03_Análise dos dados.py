@@ -166,7 +166,33 @@ else:
 st.markdown("---")
 
 
+t.title("Análise de Taxas de Sinistro por Tipo de Veículo")
 
+# Carregando o dataset
+df = pd.read_csv("Car_Insurance_Claim_Prediction.csv")
 
+# Selecionando apenas as colunas relevantes
+df = df[['Vehicle_Type', 'Claim']]
+
+# Agrupando os dados por tipo de veículo e calculando a taxa de sinistro
+grouped = df.groupby(['Vehicle_Type']).mean().reset_index()
+
+# Plotando um gráfico de barras
+sns.barplot(x='Vehicle_Type', y='Claim', data=grouped)
+
+st.pyplot()
+
+st.title("Análise de Probabilidade de Sinistro por Idade do Motorista")
+
+# Carregando o dataset
+df = pd.read_csv("Car_Insurance_Claim_Prediction.csv")
+
+# Selecionando apenas as colunas relevantes
+df = df[['Age', 'Claim']]
+
+# Plotando um gráfico de dispersão
+sns.scatterplot(x='Age', y='Claim', data=df)
+
+st.pyplot()
 
 
