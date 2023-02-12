@@ -169,7 +169,7 @@ st.markdown("---")
 t.title("Análise de Taxas de Sinistro por Tipo de Veículo")
 
 # Carregando o dataset
-df = pd.read_csv("Car_Insurance_Claim_Prediction.csv")
+df = pd.read_csv('./data/train.csv')
 
 # Selecionando apenas as colunas relevantes
 df = df[['Vehicle_Type', 'Claim']]
@@ -185,7 +185,7 @@ st.pyplot()
 st.title("Análise de Probabilidade de Sinistro por Idade do Motorista")
 
 # Carregando o dataset
-df = pd.read_csv("Car_Insurance_Claim_Prediction.csv")
+df = pd.read_csv('./data/train.csv')
 
 # Selecionando apenas as colunas relevantes
 df = df[['Age', 'Claim']]
