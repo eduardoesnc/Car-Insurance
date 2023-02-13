@@ -178,19 +178,19 @@ df = df[['segment', 'is_claim']]
 grouped = df.groupby(['segment']).mean().reset_index()
 
 # Plotando um gráfico de barras
-st.bar_chart(data=grouped, x='segment', y='is_claim')
+st.bar_chart(data=grouped, y='segment')
 
-st.title("Análise de Probabilidade de Sinistro por Idade do Motorista")
+st.title("Análise de Probabilidade de Sinistro por Tempo de Carteira")
 
 # Carregando o dataset
 df = pd.read_csv('./data/train.csv')
 
-# Selecionando apenas as colunas relevantes
-df = bf[['age_of_policyholder', 'is_claim']]
+# Selecionando apenas o grupo relevante
+df = bf[bf['is_claim'] == 1][['age_of_policyholder', 'is_claim']]
 
-# Plotando um gráfico de dispersão
-# sns.scatterplot(x='age_of_policyholder', y='is_claim', data=df)
-fig = px.scatter(data_frame=df, x='age_of_policyholder', y='is_claim')
+# Plotando um gráfico violin
+fig = px.violin(data_frame=df, y='age_of_policyholder', box=True, 
+               points='all')
 
 st.write(fig)
 
