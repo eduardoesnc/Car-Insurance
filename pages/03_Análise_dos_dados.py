@@ -166,21 +166,19 @@ else:
 st.markdown("---")
 
 
-t.title("Análise de Taxas de Sinistro por Tipo de Veículo")
+st.title("Análise de Taxas de Sinistro por Tipo de Veículo")
 
 # Carregando o dataset
 df = pd.read_csv('./data/train.csv')
 
 # Selecionando apenas as colunas relevantes
-df = df[['Vehicle_Type', 'Claim']]
+df = df[['segment', 'is_claim']]
 
 # Agrupando os dados por tipo de veículo e calculando a taxa de sinistro
-grouped = df.groupby(['Vehicle_Type']).mean().reset_index()
+grouped = df.groupby(['segment']).mean().reset_index()
 
 # Plotando um gráfico de barras
-sns.barplot(x='Vehicle_Type', y='Claim', data=grouped)
-
-st.pyplot()
+st.bar_chart(data=grouped, x='segment', y='is_claim')
 
 st.title("Análise de Probabilidade de Sinistro por Idade do Motorista")
 
@@ -188,11 +186,12 @@ st.title("Análise de Probabilidade de Sinistro por Idade do Motorista")
 df = pd.read_csv('./data/train.csv')
 
 # Selecionando apenas as colunas relevantes
-df = df[['Age', 'Claim']]
+df = bf[['age_of_policyholder', 'is_claim']]
 
 # Plotando um gráfico de dispersão
-sns.scatterplot(x='Age', y='Claim', data=df)
+# sns.scatterplot(x='age_of_policyholder', y='is_claim', data=df)
+fig = px.scatter(data_frame=df, x='age_of_policyholder', y='is_claim')
 
-st.pyplot()
+st.write(fig)
 
 

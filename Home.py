@@ -142,7 +142,7 @@ with C3:
 
 st.markdown("""
     <div style="text-align: center; margin-top: 60px;">
-    <a href="/armazem" target="_self"
+    <a href="/Análise_dos_dados" target="_self"
     style="text-decoration: none;
             color: white;
             font-size: 18px;
