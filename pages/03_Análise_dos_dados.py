@@ -82,7 +82,7 @@ nome_colunas = ['age_of_car','age_of_policyholder','area_cluster','population_de
     'is_driver_seat_height_adjustable','is_day_night_rear_view_mirror','is_ecw','is_speed_alert','ncap_rating','is_claim']
 
 # Verificando se há valores nulos
-@st.cache.data
+@st.cache
 def manterDados(bf):
     null = bf.isnull().sum()
     return null
@@ -90,7 +90,7 @@ def manterDados(bf):
 st.title('Ánalise de dados com o dataset Car-Insurance')
 
 #Download do dataset
-@st.cache.data
+@st.cache
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 
