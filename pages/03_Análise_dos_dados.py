@@ -34,6 +34,7 @@ bf = readData()
 def tratarDados(df):
     # Voltando idade do segurado para o normal
     df['age_of_policyholder'] = round(df['age_of_policyholder'].mul(100))
+    df['age_of_car'] = round(df['age_of_car'].mul(100))
 
     #Separando as tabelas max_torque e max_power
     df["max_torque_Nm"] = df['max_torque'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
@@ -82,7 +83,7 @@ nome_colunas = ['age_of_car','age_of_policyholder','area_cluster','population_de
     'is_driver_seat_height_adjustable','is_day_night_rear_view_mirror','is_ecw','is_speed_alert','ncap_rating','is_claim']
 
 # Verificando se há valores nulos
-@st.cache_data
+@st.cache
 def manterDados(bf):
     null = bf.isnull().sum()
     return null
@@ -90,7 +91,7 @@ def manterDados(bf):
 st.title('Ánalise de dados com o dataset Car-Insurance')
 
 #Download do dataset
-@st.cache_data
+@st.cache
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 
@@ -179,6 +180,7 @@ grouped = df.groupby(['segment']).mean().reset_index()
 
 # Plotando um gráfico de barras
 st.bar_chart(data=grouped, y='segment')
+st.markdown("---")
 
 st.title("Análise de Probabilidade de Sinistro por Tempo de Carteira")
 
@@ -193,5 +195,15 @@ fig = px.violin(data_frame=df, y='age_of_policyholder', box=True,
                points='all')
 
 st.write(fig)
+st.markdown("---")
 
+st.title("Análise da dispersão entre a idade do segurado e a idade do carro")
 
+# Carregando o dataset
+df = pd.read_csv('./data/train.csv')
+# Restringindo para apenas aqueles em que o seguro foi ativado
+df = bf[bf['is_claim'] == 1]
+#Criando o gráfico junto com a linha de tendência
+fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols')
+
+st.write(fig)
