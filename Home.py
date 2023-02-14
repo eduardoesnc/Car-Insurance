@@ -1,8 +1,6 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.express as px
 
 st.set_page_config(
@@ -19,8 +17,9 @@ st.set_page_config(
     initial_sidebar_state='collapsed'
 )
 
+
 # Leitura e tratamento dos dados
-@st.cache
+@st.cache_data
 def readData():
     dataset = pd.read_csv('./data/train.csv')
     return dataset
@@ -28,16 +27,15 @@ def readData():
 
 bf = readData()
 
-
 # def tratarDados(df):
-    #Idade do segurado
-    # df['age_of_policyholder'] = round(df['age_of_policyholder'].mul(100))
-    #max_torque e max_power
-    # df["max_torque_Nm"] = df['max_torque'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
-    # df["max_torque_rpm"] = df['max_torque'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-    #
-    # df["max_power_bhp"] = df['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
-    # df["max_power_rpm"] = df['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
+# Idade do segurado
+# df['age_of_policyholder'] = round(df['age_of_policyholder'].mul(100))
+# max_torque e max_power
+# df["max_torque_Nm"] = df['max_torque'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
+# df["max_torque_rpm"] = df['max_torque'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
+#
+# df["max_power_bhp"] = df['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
+# df["max_power_rpm"] = df['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
 
 
 # tratarDados(bf)
@@ -64,7 +62,7 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 
-#Vamos chamar as linhas pelas letras do alfabeto e as colunas por números
+# Vamos chamar as linhas pelas letras do alfabeto e as colunas por números
 A1, A2 = st.columns(2)
 
 with A1:
@@ -74,7 +72,7 @@ with A1:
 
 with A2:
     st.markdown("<h4 style='text-align: center;'>Tipos dos dados</h4>", unsafe_allow_html=True)
-    st.caption("<a href='https://github.com/eduardoesnc/SMD/blob/streamlit/data/Dicionário%20de%20dados%20-%20Car%20Insurance%20Database.pdf'>"
+    st.caption("<a href='https://github.com/eduardoesnc/SMD/blob/Streamlit/data/Dicionário%20de%20dados.pdf'>"
                "<p style='text-align: center;margin: -5%;'> Dicionário de dados </p>"
                "</a>", unsafe_allow_html=True)
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
@@ -94,7 +92,6 @@ with B1:
                 • 44 colunas
             </div>
             """, unsafe_allow_html=True)
-
 
 with B2:
     st.markdown("<h5 style='text-align: center;'>Tipos de recursos</h5>", unsafe_allow_html=True)
@@ -122,7 +119,7 @@ with B3:
 C1, C2, C3 = st.columns(3)
 
 with C1:
-    print(bf.isnull().sum())
+    # print(bf.isnull().sum())
     st.markdown("<h5 style='text-align: center;'>Quantidade de valores nulos</h5>", unsafe_allow_html=True)
     st.metric('Quantidade de valores nulos', 0, delta=None, delta_color="normal",
               help="O dataset não apresenta valores nulos", )
@@ -133,7 +130,7 @@ with C2:
     st.metric('Quantidade de valores duplicados', qtdDuplicados, delta=None, delta_color="normal",
               help="O dataset não apresenta valores duplicados")
 
-    #This ratio gives us information that we will be dealing with the imbalanced data which is pretty common in this type of problems.
+    # This ratio gives us information that we will be dealing with the imbalanced data which is pretty common in this type of problems.
 
 with C3:
     st.markdown("<h5 style='text-align: center;'>Quantidade de colunas multivaloradas</h5>", unsafe_allow_html=True)
@@ -155,9 +152,3 @@ st.markdown("""
     </a>
     </div>
     """, unsafe_allow_html=True)
-
-
-
-
-
-
