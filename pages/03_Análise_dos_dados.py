@@ -206,4 +206,5 @@ df = bf[bf['is_claim'] == 1]
 #Criando o gráfico junto com a linha de tendência
 fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols')
 
+#OBS: Se caso não estiver aparecendo o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
 st.write(fig)
