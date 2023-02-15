@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
+from sklearn.feature_selection import mutual_info_classif
 
 st.set_page_config(
     page_title="EDA",
@@ -33,14 +34,14 @@ bf = readData()
 
 
 def tratarDados(database):
-    # Voltando idade do segurado para o normal
-    database['age_of_policyholder'] = round(database['age_of_policyholder'].mul(100))
-    database['age_of_car'] = round(database['age_of_car'].mul(100))
+    # Os seguintes dados já estão normalizados pela formula de min-max, tem que achar um jeito de reverter se necessário
+    # database['age_of_policyholder'] = round(database['age_of_policyholder'].mul(100))
+    # database['age_of_car'] = round(database['age_of_car'].mul(100))
 
     # Separando as tabelas max_torque e max_power
-    database["max_torque_Nm"] = database['max_torque']\
+    database["max_torque_Nm"] = database['max_torque'] \
         .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
-    database["max_torque_rpm"] = database['max_torque']\
+    database["max_torque_rpm"] = database['max_torque'] \
         .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
 
     database["max_power_bhp"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
@@ -57,9 +58,9 @@ def tratarDados(database):
     database = database.drop(['length', 'width', 'height'], axis=1)
 
     # Normalizar policy tenure com min max normalization
-    # policy_df = bf['policy_tenure']
-    # normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-    # normPolicy = pd.concat([normPolicy, bf['is_claim']], axis=1)
+    policy_df = bf['policy_tenure']
+    normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
+    normPolicy = pd.concat([normPolicy, bf['is_claim']], axis=1)
 
     return database
 
@@ -162,7 +163,8 @@ option = st.selectbox(
 
 option = dict_nome_colunas.index(option)
 
-fig = px.bar(bf, x=nome_colunas[option], y='is_claim', labels={nome_colunas[option]: dict_nome_colunas[option], 'is_claim': 'Reinvidicado'})
+fig = px.bar(bf, x=nome_colunas[option], y='is_claim',
+             labels={nome_colunas[option]: dict_nome_colunas[option], 'is_claim': 'Reinvidicado'})
 st.write(fig)
 
 st.caption('Gráficos para analisar como os valores das colunas interagem com a chance de reivindicação')
@@ -219,7 +221,43 @@ st.title("Análise da dispersão entre a idade do segurado e a idade do carro")
 df = bf[bf['is_claim'] == 1]
 # Criando o gráfico junto com a linha de tendência
 fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols',
-                 labels={'age_of_car': 'Idade do carro','age_of_policyholder': 'Idade do segurado'})
+                 labels={'age_of_car': 'Idade do carro', 'age_of_policyholder': 'Idade do segurado'})
 
 # OBS: Se caso não estiver aparecendo o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
 st.write(fig)
+
+
+# Gráfico Mutual Information Score
+def make_mi_scores(X, y):
+    X = X.copy()
+    for colname in X.select_dtypes(["object", "category", "bool"]):
+        X[colname], _ = X[colname].factorize()
+    # All discrete features should now have integer dtypes
+    discrete_features = [pd.api.types.is_integer_dtype(t) for t in X.dtypes]
+    all_mi_scores = []
+    for random_state in range(0, 5):
+        mi_scores = mutual_info_classif(X, y, discrete_features=discrete_features, random_state=random_state)
+        all_mi_scores.append(mi_scores)
+    all_mi_scores = np.mean(all_mi_scores, axis=0)
+    all_mi_scores = pd.Series(all_mi_scores, name="MI Scores", index=X.columns)
+    all_mi_scores = all_mi_scores.sort_values(ascending=False)
+    return all_mi_scores
+
+
+def plot_mi_scores(scores):
+    scores = scores.sort_values(ascending=True)
+    width = np.arange(len(scores))
+    ticks = list(scores.index)
+    plt.barh(width, scores)
+    plt.yticks(width, ticks)
+    plt.title("Mutual Information Scores")
+
+
+y_target = bf.is_claim.astype('int16')
+
+mi_scores = make_mi_scores(bf.drop('is_claim', axis=1), y_target)
+
+print(mi_scores.head(20))
+print(mi_scores.tail(20))
+plt.figure(dpi=100, figsize=(8, 5))
+st.pyplot(plot_mi_scores(mi_scores.head(20)))
