@@ -49,7 +49,8 @@ st.markdown(
     """
     Este dashboard tem como principal objetivo a análise de dados do data set [Car Insurance Claim
      Prediction](https://www.kaggle.com/datasets/ifteshanajnin/carinsuranceclaimprediction-classification)
-    para o desenvolvimento de uma aplicação de Machine Learning e integrá-la com uma aplicação Flutter. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    para o desenvolvimento de uma aplicação de Machine Learning e integrá-la com uma aplicação Flutter. 
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
      Etiam aliquam vitae nibh id pharetra. Mauris et metus erat. Vivamus facilisis nisl nec faucibus tincidunt. Donec 
      tincidunt dignissim risus, id ornare diam ultricies ac. 
     #### Quer saber mais?
@@ -130,12 +131,26 @@ with C2:
     st.metric('Quantidade de valores duplicados', qtdDuplicados, delta=None, delta_color="normal",
               help="O dataset não apresenta valores duplicados")
 
-    # This ratio gives us information that we will be dealing with the imbalanced data which is pretty common in this type of problems.
-
 with C3:
     st.markdown("<h5 style='text-align: center;'>Quantidade de colunas multivaloradas</h5>", unsafe_allow_html=True)
     st.metric('Quantidade de colunas multivaloradas', 0, delta=None, delta_color="normal",
               help="O dataset não apresenta colunas multivaloradas", )
+
+st.markdown("""
+    <div style="text-align: center; margin-top: 60px;">
+    <a href="/Tratamento_dos_dados" target="_self"
+    style="text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 550;
+            background: rgb(243,68,55);
+            background: linear-gradient(156deg, rgba(249,170,61,1) 30%, rgba(243,68,55,1) 70%);
+            padding: 15px 40px;
+            border-radius: 8px;">
+    Tratamento dos dados
+    </a>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.markdown("""
     <div style="text-align: center; margin-top: 60px;">
