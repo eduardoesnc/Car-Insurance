@@ -146,10 +146,10 @@ if st.checkbox('Mostrar dataset'):
 #     st.table(manterDados(bf))
 
 # SIDEBAR
-if st.sidebar.checkbox('Mostrar os tipos dos dados do dataset'):
-    st.subheader('Tipos dos dados')
-    var = bf.dtypes
-    st.write(var)
+# if st.sidebar.checkbox('Mostrar os tipos dos dados do dataset'):
+#     st.subheader('Tipos dos dados')
+#     var = bf.dtypes
+#     st.write(var)
 
 st.sidebar.markdown("---")
 
@@ -162,26 +162,27 @@ option = st.selectbox(
 
 option = dict_nome_colunas.index(option)
 
-st.bar_chart(data=bf, x=nome_colunas[option], y='is_claim')
+fig = px.bar(bf, x=nome_colunas[option], y='is_claim', labels={nome_colunas[option]: dict_nome_colunas[option], 'is_claim': 'Reinvidicado'})
+st.write(fig)
 
 st.caption('Gráficos para analisar como os valores das colunas interagem com a chance de reivindicação')
 st.markdown("---")
 
-selecoes = st.sidebar.multiselect('Escolha duas opções e o tipo de gráfico desejado', nome_colunas)
-tipoGrafico = st.sidebar.radio('', ['Linha', 'Barra'])
-if len(selecoes) == 2:
-    st.subheader("Gráficos formados pelas opções da multiseleção")
-    if tipoGrafico == 'Linha':
-        st.line_chart(data=bf, x=selecoes[0], y=selecoes[1])
-    elif tipoGrafico == 'Barra':
-        st.bar_chart(data=bf, x=selecoes[0], y=selecoes[1])
-elif len(selecoes) < 2:
-    st.subheader('Escolha opções na sidebar para formar um gráfico')
-else:
-    st.subheader('Escolha opções para formar um gráfico')
-    st.error("Selecione apenas duas opções")
-
-st.markdown("---")
+# selecoes = st.sidebar.multiselect('Escolha duas opções e o tipo de gráfico desejado', nome_colunas)
+# tipoGrafico = st.sidebar.radio('', ['Linha', 'Barra'])
+# if len(selecoes) == 2:
+#     st.subheader("Gráficos formados pelas opções da multiseleção")
+#     if tipoGrafico == 'Linha':
+#         st.line_chart(data=bf, x=selecoes[0], y=selecoes[1])
+#     elif tipoGrafico == 'Barra':
+#         st.bar_chart(data=bf, x=selecoes[0], y=selecoes[1])
+# elif len(selecoes) < 2:
+#     st.subheader('Escolha opções na sidebar para formar um gráfico')
+# else:
+#     st.subheader('Escolha opções para formar um gráfico')
+#     st.error("Selecione apenas duas opções")
+#
+# st.markdown("---")
 
 st.title("Análise de Taxas de Sinistro por Tipo de Veículo")
 
@@ -195,7 +196,9 @@ df = df[['segment', 'is_claim']]
 grouped = df.groupby(['segment']).mean().reset_index()
 
 # Plotando um gráfico de barras
-st.bar_chart(data=grouped, x='segment', y='is_claim')
+fig = px.bar(grouped, x='segment', y='is_claim', labels={'segment': 'Segmento do carro', 'is_claim': 'Reinvidicado'})
+st.write(fig)
+
 st.markdown("---")
 
 st.title("Análise de Probabilidade de Sinistro por Tempo de Carteira")
@@ -205,7 +208,7 @@ df = bf[bf['is_claim'] == 1][['age_of_policyholder', 'is_claim']]
 
 # Plotando um gráfico violin
 fig = px.violin(data_frame=df, y='age_of_policyholder', box=True,
-                points='all')
+                points='all', labels={'age_of_policyholder': 'Idade do segurado'})
 
 st.write(fig)
 st.markdown("---")
@@ -215,7 +218,8 @@ st.title("Análise da dispersão entre a idade do segurado e a idade do carro")
 # Restringindo para apenas aqueles em que o seguro foi ativado
 df = bf[bf['is_claim'] == 1]
 # Criando o gráfico junto com a linha de tendência
-fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols')
+fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols',
+                 labels={'age_of_car': 'Idade do carro','age_of_policyholder': 'Idade do segurado'})
 
 # OBS: Se caso não estiver aparecendo o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
 st.write(fig)
