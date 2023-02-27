@@ -27,24 +27,25 @@ def readData():
     return dataset
 
 
-bf = readData()
+bf = readData()  # Dataset Tratado
+df = readData()  # Dataset Cru
 
 
 def tratarDados(database):
     # Apagar coluna policy_id, já que são apenas IDs
-    database = database.drop(['policy_id'], axis=1)
+    # database = database.drop(['policy_id'], axis=1)
 
-    # Consertando as colunas max_torque e max_power
-    database["max_torque_Nm"] = database['max_torque'].\
-        str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
-    database["max_torque_rpm"] = database['max_torque'].\
-        str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-
-    database["max_power_bhp"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
-    database["max_power_rpm"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-
-    database = database.drop(['max_torque'], axis=1)
-    database = database.drop(['max_power'], axis=1)
+    # Consertando as colunas max_torque e max_power, provavelmente isso não será necessário
+    # database["max_torque_Nm"] = database['max_torque']. \
+    #     str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
+    # database["max_torque_rpm"] = database['max_torque']. \
+    #     str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
+    #
+    # database["max_power_bhp"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
+    # database["max_power_rpm"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
+    #
+    # database = database.drop(['max_torque'], axis=1)
+    # database = database.drop(['max_power'], axis=1)
 
     # # Tranformar as colunas largura tamanho e altura em apenas uma coluna chamada volume
     # database['volume'] = np.log(database.length * database.width * database.height * 1e-6)
@@ -94,7 +95,7 @@ bf = tratarDados(bf)
 numericos = bf.select_dtypes(include=[np.float64, np.int64])
 categoricos = bf.select_dtypes(include=[np.object])
 
-st.title('Tratamento dos dados do dataset Car-Insurance')
+st.title('Pré-Processamento dos dados do dataset Car-Insurance')
 st.markdown(
     """
     - [Fonte](https://www.kaggle.com/datasets/ifteshanajnin/carinsuranceclaimprediction-classification)
@@ -102,10 +103,28 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 st.markdown("---")
+
+st.markdown("<h2>Remoção da coluna policyId</h2>", unsafe_allow_html=True)
+st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
+            A coluna 'policy_id' representa apenas os IDs de cada veículo e, portanto, não terá impacto nas análises 
+            nem no desenvolvimento da aplicação de machine learning.
+            </p>""", unsafe_allow_html=True)
+
+col11, col12 = st.columns(2)
+with col11:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Antes</h5>", unsafe_allow_html=True)
+    st.dataframe(df)
+
+with col12:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Depois</h5>", unsafe_allow_html=True)
+    df = df.drop(['policy_id'], axis=1)
+    st.dataframe(df)
+
+st.markdown("---")
 st.markdown("<h2>Normalização do Tempo de seguro</h2>", unsafe_allow_html=True)
 st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
-            A coluna que representa o Tempo de seguro deve ser normalizada para manter-los em uma escala comum e para
-             trabalharmos melhor com o algoritmo de Machine Learning.
+            A coluna que indica o Tempo de Seguro deve ser normalizada para que seus valores estejam em uma escala comum
+             e, assim, possamos trabalhar com mais eficiência no algoritmo de Machine Learning.
             </p>""", unsafe_allow_html=True)
 A1, A2 = st.columns(2)
 with A1:
@@ -124,7 +143,9 @@ st.markdown("---")
 
 st.markdown("<h2>Altura, largura e comprimento para volume</h2>", unsafe_allow_html=True)
 st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
-            As colunas altura, largura e comprimento podem ser simplificadas em uma única coluna chamada Volume.
+            Pode-se simplificar as colunas de altura, largura e comprimento em uma única coluna, denominada 'Volume'. É 
+            importante normalizar a coluna Volume para que seus valores estejam em uma escala comum e, assim, possamos 
+            trabalhar com mais eficiência no algoritmo de Machine Learning.
             </p>""", unsafe_allow_html=True)
 
 B1, B2, B3 = st.columns(3)
@@ -204,3 +225,14 @@ st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: -20px">
             As colunas da idade do carro e da idade do segurado apontavam alguns valores muito diferentes do comum, 
             sendo assim foram removidas algumas linhas que apresentavam esses valores extremos.
             </p>""", unsafe_allow_html=True)
+
+# Centralizar todos os elementos da página
+st.markdown("""
+    <style>
+    .element-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)

@@ -47,12 +47,24 @@ st.title('Bem-vindo!')
 
 st.markdown(
     """
-    Este dashboard tem como principal objetivo a análise de dados do data set [Car Insurance Claim
-     Prediction](https://www.kaggle.com/datasets/ifteshanajnin/carinsuranceclaimprediction-classification)
-    para o desenvolvimento de uma aplicação de Machine Learning e integrá-la com uma aplicação Flutter. 
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-     Etiam aliquam vitae nibh id pharetra. Mauris et metus erat. Vivamus facilisis nisl nec faucibus tincidunt. Donec 
-     tincidunt dignissim risus, id ornare diam ultricies ac. 
+    O conjunto de dados [Car Insurance Claim
+     Prediction](https://www.kaggle.com/datasets/ifteshanajnin/carinsuranceclaimprediction-classification) contém 
+     informações sobre clientes de uma seguradora de automóveis, incluindo detalhes sobre seus veículos, histórico 
+     de sinistros e outras informações pessoais. O objetivo deste dashboard é fornecer uma visão geral desses dados,
+      permitindo que os usuários explorem e analisem as informações relevantes para desenvolver uma aplicação de Machine
+       Learning para prever se um cliente fará uma reclamação de seguro.
+
+    Com base nas análises realizadas neste dashboard, os usuários podem identificar quais variáveis estão mais 
+    correlacionadas com as reclamações de seguros e quais técnicas de Machine Learning são mais adequadas para 
+    desenvolver um modelo de previsão preciso. Além disso, este dashboard pode ajudar os usuários a identificar 
+    quais clientes são mais propensos a fazer uma reclamação de seguro, permitindo que a seguradora tome medidas 
+    proativas para reduzir o risco de sinistros e aumentar a satisfação do cliente.
+
+    A integração deste dashboard com uma aplicação Flutter pode permitir que os usuários acessem as informações e 
+    visualizações de dados em tempo real a partir de seus dispositivos móveis, tornando a análise de dados mais 
+    acessível e conveniente. Combinado com o poder da Machine Learning, essa aplicação pode ajudar a seguradora 
+    a melhorar seus serviços e tomar decisões mais informadas e precisas.
+
     #### Quer saber mais?
     - [Artigo do projeto](https://docs.google.com/document/d/1i_8mR6b4knryxF9xFbUrW3NNg7GUYP-RoosVgll9K1k/edit?usp=sharing)
     - [Github do projeto](https://github.com/eduardoesnc/SMD)
@@ -114,7 +126,7 @@ with B3:
 
     st.markdown("<h5 style='text-align: center;'>Razão isClaim</h5>", unsafe_allow_html=True)
     st.metric('Razão da coluna isClaim', '1/14.6', delta=None, delta_color="normal",
-              help="Temos 14.6 isClaim falsos para cada isClaim verdadeiros", )
+              help="Temos 14.6 isClaim falsos para cada isClaim verdadeiro", )
     st.markdown("<br> <br>", unsafe_allow_html=True)
 
 C1, C2, C3 = st.columns(3)
@@ -138,7 +150,7 @@ with C3:
 
 st.markdown("""
     <div style="text-align: center; margin-top: 60px;">
-    <a href="/Tratamento_dos_dados" target="_self"
+    <a href="/Pré-Processamento_dos_dados" target="_self"
     style="text-decoration: none;
             color: white;
             font-size: 18px;
@@ -147,7 +159,7 @@ st.markdown("""
             background: linear-gradient(156deg, rgba(249,170,61,1) 30%, rgba(243,68,55,1) 70%);
             padding: 15px 40px;
             border-radius: 8px;">
-    Tratamento dos dados
+    Pré-Processamento dos dados
     </a>
     </div>
     """, unsafe_allow_html=True)
@@ -167,3 +179,15 @@ st.markdown("""
     </a>
     </div>
     """, unsafe_allow_html=True)
+
+# Centralizar todos os elementos da página
+st.markdown("""
+    <style>
+    .element-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+

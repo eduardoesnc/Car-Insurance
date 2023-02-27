@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
+# import seaborn as sns
 import plotly.express as px
 from sklearn.feature_selection import mutual_info_classif
 
@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state='expanded'
 )
 
-st.sidebar.header('Dashboard')
+# st.sidebar.header('Dashboard')
 
 
 # Leitura e tratamento dos dados
@@ -39,16 +39,16 @@ def tratarDados(database):
     # database['age_of_car'] = round(database['age_of_car'].mul(100))
 
     # Separando as tabelas max_torque e max_power
-    database["max_torque_Nm"] = database['max_torque'] \
-        .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
-    database["max_torque_rpm"] = database['max_torque'] \
-        .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-
-    database["max_power_bhp"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
-    database["max_power_rpm"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-
-    database = database.drop(['max_torque'], axis=1)
-    database = database.drop(['max_power'], axis=1)
+    # database["max_torque_Nm"] = database['max_torque'] \
+    #     .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
+    # database["max_torque_rpm"] = database['max_torque'] \
+    #     .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
+    #
+    # database["max_power_bhp"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
+    # database["max_power_rpm"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
+    #
+    # database = database.drop(['max_torque'], axis=1)
+    # database = database.drop(['max_power'], axis=1)
 
     # Apagar coluna policy_id, já que são apenas IDs
     database = database.drop(['policy_id'], axis=1)
@@ -60,7 +60,7 @@ def tratarDados(database):
     # Normalizar policy tenure com min max normalization
     policy_df = bf['policy_tenure']
     normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-    normPolicy = pd.concat([normPolicy, bf['is_claim']], axis=1)
+    pd.concat([normPolicy, bf['is_claim']], axis=1)
 
     return database
 
@@ -152,7 +152,7 @@ if st.checkbox('Mostrar dataset'):
 #     var = bf.dtypes
 #     st.write(var)
 
-st.sidebar.markdown("---")
+# st.sidebar.markdown("---")
 
 # _____________GRÁFICOS USANDO STREAMLIT E PLOTLY________________ #
 st.header('Análises')
@@ -228,6 +228,12 @@ st.write(fig)
 
 
 # Gráfico Mutual Information Score
+st.title("Mutual Information Score")
+st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
+            O Mutual Information Score é uma métrica de aprendizado de máquina que mede a dependência entre duas 
+            variáveis aleatórias. No caso do dataset que estamos trabalhando, estamos usando essa métrica para avaliar a
+             relação entre as variáveis do dataset e a coluna is_claim.
+            </p>""", unsafe_allow_html=True)
 def make_mi_scores(X, y):
     X = X.copy()
     for colname in X.select_dtypes(["object", "category", "bool"]):
@@ -260,4 +266,5 @@ mi_scores = make_mi_scores(bf.drop('is_claim', axis=1), y_target)
 print(mi_scores.head(20))
 print(mi_scores.tail(20))
 plt.figure(dpi=100, figsize=(8, 5))
+st.set_option('deprecation.showPyplotGlobalUse', False)
 st.pyplot(plot_mi_scores(mi_scores.head(20)))
