@@ -1,7 +1,5 @@
 import streamlit as st
-import numpy as np
 import pandas as pd
-import plotly.express as px
 
 st.set_page_config(
     page_title="Home",
@@ -89,7 +87,7 @@ with A2:
                "<p style='text-align: center;margin: -5%;'> Dicionário de dados </p>"
                "</a>", unsafe_allow_html=True)
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    bf.dtypes
+    st.write(bf.dtypes)
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -190,4 +188,3 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-

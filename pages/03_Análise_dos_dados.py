@@ -20,6 +20,7 @@ st.set_page_config(
     initial_sidebar_state='expanded'
 )
 
+
 # st.sidebar.header('Dashboard')
 
 
@@ -132,7 +133,7 @@ categoricos = bf.select_dtypes(include=[np.object])
 st.markdown(
     """
     - [Fonte](https://www.kaggle.com/datasets/ifteshanajnin/carinsuranceclaimprediction-classification)
-    - [Dicionário de dados](https://github.com/eduardoesnc/SMD/blob/streamlit/data/Dicionário%20de%20dados%20-%20Car%20Insurance%20Database.pdf)
+    - [Dicionário de dados](https://github.com/eduardoesnc/SMD/blob/Streamlit/data/Dicionário%20de%20dados.pdf)
     """, unsafe_allow_html=True
 )
 
@@ -203,7 +204,7 @@ st.write(fig)
 
 st.markdown("---")
 
-st.title("Análise de Probabilidade de Sinistro por Tempo de Carteira")
+st.title("Análise de Probabilidade de Sinistro pela Idade do Motorista")
 
 # Selecionando apenas o grupo relevante
 df = bf[bf['is_claim'] == 1][['age_of_policyholder', 'is_claim']]
@@ -226,7 +227,6 @@ fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols',
 # OBS: Se caso não estiver aparecendo o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
 st.write(fig)
 
-
 # Gráfico Mutual Information Score
 st.title("Mutual Information Score")
 st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
@@ -234,6 +234,8 @@ st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
             variáveis aleatórias. No caso do dataset que estamos trabalhando, estamos usando essa métrica para avaliar a
              relação entre as variáveis do dataset e a coluna is_claim.
             </p>""", unsafe_allow_html=True)
+
+
 def make_mi_scores(X, y):
     X = X.copy()
     for colname in X.select_dtypes(["object", "category", "bool"]):
@@ -242,8 +244,8 @@ def make_mi_scores(X, y):
     discrete_features = [pd.api.types.is_integer_dtype(t) for t in X.dtypes]
     all_mi_scores = []
     for random_state in range(0, 5):
-        mi_scores = mutual_info_classif(X, y, discrete_features=discrete_features, random_state=random_state)
-        all_mi_scores.append(mi_scores)
+        miScores = mutual_info_classif(X, y, discrete_features=discrete_features, random_state=random_state)
+        all_mi_scores.append(miScores)
     all_mi_scores = np.mean(all_mi_scores, axis=0)
     all_mi_scores = pd.Series(all_mi_scores, name="MI Scores", index=X.columns)
     all_mi_scores = all_mi_scores.sort_values(ascending=False)
@@ -263,8 +265,8 @@ y_target = bf.is_claim.astype('int16')
 
 mi_scores = make_mi_scores(bf.drop('is_claim', axis=1), y_target)
 
-print(mi_scores.head(20))
-print(mi_scores.tail(20))
+# print(mi_scores.head(20))
+# print(mi_scores.tail(20))
 plt.figure(dpi=100, figsize=(8, 5))
 st.set_option('deprecation.showPyplotGlobalUse', False)
 st.pyplot(plot_mi_scores(mi_scores.head(20)))
