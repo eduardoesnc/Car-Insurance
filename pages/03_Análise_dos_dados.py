@@ -274,12 +274,12 @@ st.title("Análise da relação entre a classificação de segurança NCAP e out
 st.markdown("---")
 
 # Gráfico Mutual Information Score
-st.title("Mutual Information Score")
-st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
-            O Mutual Information Score é uma métrica de aprendizado de máquina que mede a dependência entre duas 
-            variáveis aleatórias. No caso do dataset que estamos trabalhando, estamos usando essa métrica para avaliar a
-             relação entre as variáveis do dataset e a coluna is_claim.
-            </p>""", unsafe_allow_html=True)
+# st.title("Mutual Information Score")
+# st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
+#             O Mutual Information Score é uma métrica de aprendizado de máquina que mede a dependência entre duas
+#             variáveis aleatórias. No caso do dataset que estamos trabalhando, estamos usando essa métrica para avaliar a
+#              relação entre as variáveis do dataset e a coluna is_claim.
+#             </p>""", unsafe_allow_html=True)
 
 # def make_mi_scores(X, y):
 #     X = X.copy()
