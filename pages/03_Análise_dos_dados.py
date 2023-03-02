@@ -25,7 +25,7 @@ st.set_page_config(
 
 
 # Leitura e tratamento dos dados
-# @st.cache_data
+@st.cache_data
 def readData():
     dataset = pd.read_csv('./data/train.csv')
     return dataset
@@ -39,22 +39,10 @@ def tratarDados(database):
     # database['age_of_policyholder'] = round(database['age_of_policyholder'].mul(100))
     # database['age_of_car'] = round(database['age_of_car'].mul(100))
 
-    # Separando as tabelas max_torque e max_power
-    # database["max_torque_Nm"] = database['max_torque'] \
-    #     .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
-    # database["max_torque_rpm"] = database['max_torque'] \
-    #     .str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-    #
-    # database["max_power_bhp"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
-    # database["max_power_rpm"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-    #
-    # database = database.drop(['max_torque'], axis=1)
-    # database = database.drop(['max_power'], axis=1)
-
     # Apagar coluna policy_id, já que são apenas IDs
     database = database.drop(['policy_id'], axis=1)
 
-    # Tranformar as colunas largura tamanho e altura em apenas uma coluna chamada volume
+    # Tranformar as colunas largura, tamanho e altura em apenas uma coluna chamada volume
     database['volume'] = np.log(database.length * database.width * database.height * 1e-6)
     database = database.drop(['length', 'width', 'height'], axis=1)
 
@@ -67,7 +55,7 @@ def tratarDados(database):
 
 
 # Criação de array com o nome de todas as colunas para facilitar na criação dos filtros
-dict_nome_colunas = ['Idade do carro em anos', 'Idade do segurado em anos', 'Área do segurado',
+dict_nome_colunas = ['Idade do carro normalizada', 'Idade do segurado normalizada', 'Área do segurado',
                      'Densidade populacional',
                      'Código da fabricante do carro', 'Segmento do carro (A / B1 / B2 / C1 / C2)', 'Modelo do carro',
                      'Tipo de combustível usado no carro', 'Torque máximo gerado pelo carro (Nm@rpm)',
@@ -124,7 +112,7 @@ st.download_button(
     mime='text/csv',
 )
 
-bf = tratarDados(bf)  # tbf é o dataset com tratamento de dados
+bf = tratarDados(bf)
 numericos = bf.select_dtypes(include=[np.float64, np.int64])
 categoricos = bf.select_dtypes(include=[np.object])
 
@@ -143,18 +131,6 @@ if st.checkbox('Mostrar dataset'):
     st.subheader('Dataset')
     st.dataframe(bf)
 
-# if st.checkbox('Mostrar média dos valores das colunas'):
-#     st.subheader('Média dos valores das colunas')
-#     st.table(manterDados(bf))
-
-# SIDEBAR
-# if st.sidebar.checkbox('Mostrar os tipos dos dados do dataset'):
-#     st.subheader('Tipos dos dados')
-#     var = bf.dtypes
-#     st.write(var)
-
-# st.sidebar.markdown("---")
-
 # _____________GRÁFICOS USANDO STREAMLIT E PLOTLY________________ #
 st.header('Análises')
 
@@ -165,7 +141,7 @@ option = st.selectbox(
 option = dict_nome_colunas.index(option)
 
 fig = px.bar(bf, x=nome_colunas[option], y='is_claim',
-             labels={nome_colunas[option]: dict_nome_colunas[option], 'is_claim': 'Reinvidicado'})
+             labels={nome_colunas[option]: dict_nome_colunas[option], 'is_claim': 'Reinvidicados'})
 st.write(fig)
 
 st.caption('Gráficos para analisar como os valores das colunas interagem com a chance de reivindicação')
@@ -187,7 +163,8 @@ st.markdown("---")
 #
 # st.markdown("---")
 
-st.title("Análise da porcentagem da classificação de segurança pela NCAP entre os carros com o seguro ativado")
+st.title(
+    "Análise da porcentagem da classificação de segurança pela NCAP entre os carros com chance de reivindicar o seguro")
 # Restringindo para apenas aqueles em que o seguro foi ativado
 data = bf[bf['is_claim'] == 1]
 
@@ -195,19 +172,20 @@ data = bf[bf['is_claim'] == 1]
 count = data.groupby(['ncap_rating'])['is_claim'].count().reset_index(name='count')
 
 # Calculando a porcentagem de ocorrências de cada ncap_rating em relação ao total de is_claim igual a 1
-count['Porcentagem'] = count['count'].apply(lambda x: (x/data.shape[0])*100)
+count['Porcentagem'] = count['count'].apply(lambda x: (x / data.shape[0]) * 100)
 
 # Criando o gráfico de barras
-fig = px.bar(count, x='ncap_rating', y='Porcentagem', labels={'ncap_rating':'Classificação de segurança pela NCAP'})
+fig = px.bar(count, x='ncap_rating', y='Porcentagem', labels={'ncap_rating': 'Classificação de segurança pela NCAP'})
 fig.update_traces(text=count['Porcentagem'].apply(lambda x: f'{round(x, 2)}%'))
 st.plotly_chart(fig)
 
 st.markdown("---")
 
-st.title("Análise de Taxas de Sinistro por Tipo de Veículo")
+st.title("Análise de Probabilidade de Sinistro por Tipo de Veículo")
 
 # Carregando o dataset
-df = pd.read_csv('./data/train.csv')
+# df = pd.read_csv('./data/train.csv')
+df = bf
 
 # Selecionando apenas as colunas relevantes
 df = df[['segment', 'is_claim']]
@@ -221,6 +199,7 @@ st.write(fig)
 
 st.markdown("---")
 
+# Sugestão: Análise dos veículos com chance de sinistro pela idade do motorista
 st.title("Análise de Probabilidade de Sinistro pela Idade do Motorista")
 
 # Selecionando apenas o grupo relevante
@@ -241,8 +220,58 @@ df = bf[bf['is_claim'] == 1]
 fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols',
                  labels={'age_of_car': 'Idade do carro', 'age_of_policyholder': 'Idade do segurado'})
 
-# OBS: Se caso não estiver aparecendo o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
+# OBS: Caso não estiver a aparecer o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
 st.write(fig)
+
+st.markdown("---")
+
+st.title("Análise do tipo de combustível usado pelos carros segurados")
+
+fig = px.histogram(bf, y='fuel_type', labels={'fuel_type': 'Tipo de combustível', 'count': 'Quantidade'})
+st.write(fig)
+
+
+st.markdown("---")
+# um histograma que mostre o número de segurados em cada região ou estado.
+st.title("Análise da distribuição geográfica dos segurados:")
+
+fig = px.histogram(bf, x="area_cluster", labels={'area_cluster': 'Área do Segurado', 'count': 'Quantidade'})
+st.write(fig)
+
+st.markdown("---")
+# Um gráfico de dispersão com a densidade populacional no eixo x e a área do segurado no eixo y seria uma boa escolha
+# para visualizar a relação entre essas variáveis.
+st.title("Análise da relação entre a densidade populacional e a área do segurado:")
+
+fig = px.scatter(bf, x='area_cluster', y='population_density',
+                 labels={'area_cluster': 'Área do Segurado', 'population_density': 'Densidade Populacional'})
+st.write(fig)
+
+st.markdown("---")
+# Um histograma seria uma boa escolha para visualizar a distribuição dos anos de fabricação dos carros.
+st.title("Análise da distribuição da idade do carro:")
+
+st.markdown("---")
+# Um gráfico de dispersão com a idade do carro no eixo x e o tipo de combustível no eixo y seria uma boa escolha para
+# visualizar a relação entre essas variáveis.
+st.title("Correlação entre idade do carro e tipo de combustível:")
+
+st.markdown("---")
+# Um gráfico de barras ou um gráfico de pizza pode ser útil para visualizar as frequências de cada segmento de carro
+# em cada faixa etária.
+st.title("Análise da relação entre idade do segurado e o segmento do carro")
+
+st.markdown("---")
+# Um gráfico de barras ou um gráfico de pizza pode ser útil para visualizar as frequências de cada segmento de carro
+# em cada faixa etária.
+st.title("Análise da relação entre idade do segurado e o segmento do carro")
+
+st.markdown("---")
+# Um gráfico de barras ou um gráfico de pizza pode ser útil para visualizar as frequências de cada recurso de segurança
+# para cada classificação de segurança NCAP.
+st.title("Análise da relação entre a classificação de segurança NCAP e outros recursos de segurança:")
+
+st.markdown("---")
 
 # Gráfico Mutual Information Score
 st.title("Mutual Information Score")
@@ -252,38 +281,37 @@ st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
              relação entre as variáveis do dataset e a coluna is_claim.
             </p>""", unsafe_allow_html=True)
 
-
-def make_mi_scores(X, y):
-    X = X.copy()
-    for colname in X.select_dtypes(["object", "category", "bool"]):
-        X[colname], _ = X[colname].factorize()
-    # All discrete features should now have integer dtypes
-    discrete_features = [pd.api.types.is_integer_dtype(t) for t in X.dtypes]
-    all_mi_scores = []
-    for random_state in range(0, 5):
-        miScores = mutual_info_classif(X, y, discrete_features=discrete_features, random_state=random_state)
-        all_mi_scores.append(miScores)
-    all_mi_scores = np.mean(all_mi_scores, axis=0)
-    all_mi_scores = pd.Series(all_mi_scores, name="MI Scores", index=X.columns)
-    all_mi_scores = all_mi_scores.sort_values(ascending=False)
-    return all_mi_scores
-
-
-def plot_mi_scores(scores):
-    scores = scores.sort_values(ascending=True)
-    width = np.arange(len(scores))
-    ticks = list(scores.index)
-    plt.barh(width, scores)
-    plt.yticks(width, ticks)
-    plt.title("Mutual Information Scores")
-
-
-y_target = bf.is_claim.astype('int16')
-
-mi_scores = make_mi_scores(bf.drop('is_claim', axis=1), y_target)
-
-# print(mi_scores.head(20))
-# print(mi_scores.tail(20))
-plt.figure(dpi=100, figsize=(8, 5))
-st.set_option('deprecation.showPyplotGlobalUse', False)
-st.pyplot(plot_mi_scores(mi_scores.head(20)))
+# def make_mi_scores(X, y):
+#     X = X.copy()
+#     for colname in X.select_dtypes(["object", "category", "bool"]):
+#         X[colname], _ = X[colname].factorize()
+#     # All discrete features should now have integer dtypes
+#     discrete_features = [pd.api.types.is_integer_dtype(t) for t in X.dtypes]
+#     all_mi_scores = []
+#     for random_state in range(0, 5):
+#         miScores = mutual_info_classif(X, y, discrete_features=discrete_features, random_state=random_state)
+#         all_mi_scores.append(miScores)
+#     all_mi_scores = np.mean(all_mi_scores, axis=0)
+#     all_mi_scores = pd.Series(all_mi_scores, name="MI Scores", index=X.columns)
+#     all_mi_scores = all_mi_scores.sort_values(ascending=False)
+#     return all_mi_scores
+#
+#
+# def plot_mi_scores(scores):
+#     scores = scores.sort_values(ascending=True)
+#     width = np.arange(len(scores))
+#     ticks = list(scores.index)
+#     plt.barh(width, scores)
+#     plt.yticks(width, ticks)
+#     plt.title("Mutual Information Scores")
+#
+#
+# y_target = bf.is_claim.astype('int16')
+#
+# mi_scores = make_mi_scores(bf.drop('is_claim', axis=1), y_target)
+#
+# # print(mi_scores.head(20))
+# # print(mi_scores.tail(20))
+# plt.figure(dpi=100, figsize=(8, 5))
+# st.set_option('deprecation.showPyplotGlobalUse', False)
+# st.pyplot(plot_mi_scores(mi_scores.head(20)))

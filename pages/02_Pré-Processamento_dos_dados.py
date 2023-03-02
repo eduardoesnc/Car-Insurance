@@ -33,18 +33,6 @@ def tratarDados(database):
     # Apagar coluna policy_id, já que são apenas IDs
     # database = database.drop(['policy_id'], axis=1)
 
-    # Consertando as colunas max_torque e max_power, provavelmente isso não será necessário
-    # database["max_torque_Nm"] = database['max_torque']. \
-    #     str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
-    # database["max_torque_rpm"] = database['max_torque']. \
-    #     str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-    #
-    # database["max_power_bhp"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
-    # database["max_power_rpm"] = database['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-    #
-    # database = database.drop(['max_torque'], axis=1)
-    # database = database.drop(['max_power'], axis=1)
-
     # # Tranformar as colunas largura tamanho e altura em apenas uma coluna chamada volume
     # database['volume'] = np.log(database.length * database.width * database.height * 1e-6)
     # database = database.drop(['length', 'width', 'height'], axis=1)
@@ -58,7 +46,7 @@ def tratarDados(database):
 
 
 # Criação de array com o nome de todas as colunas para facilitar na criação dos filtros
-dict_nome_colunas = ['Idade do carro em anos', 'Idade do segurado em anos', 'Área do segurado',
+dict_nome_colunas = ['Idade do carro normalizada', 'Idade do segurado normalizada', 'Área do segurado',
                      'Densidade populacional',
                      'Código da fabricante do carro', 'Segmento do carro (A / B1 / B2 / C1 / C2)', 'Modelo do carro',
                      'Tipo de combustível usado no carro', 'Torque máximo gerado pelo carro',
@@ -212,8 +200,8 @@ with D1:
 
 with D2:
     st.markdown("<h5 style='text-align: center; margin-bottom: -34px;'>Depois</h5>", unsafe_allow_html=True)
-    age_of_car_outliers = bf.age_of_policyholder > bf.age_of_policyholder.quantile(0.995)
-    bf = bf.loc[~age_of_car_outliers]
+    age_of_policyholder_outliers = bf.age_of_policyholder > bf.age_of_policyholder.quantile(0.995)
+    bf = bf.loc[~age_of_policyholder_outliers]
 
     fig = px.box(bf, x='age_of_policyholder', labels={'age_of_policyholder': 'Idade do segurado'},
                  width=400, height=300)
@@ -221,7 +209,7 @@ with D2:
 
 st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: -20px">
             As colunas da idade do carro e da idade do segurado apontavam alguns valores muito diferentes do comum, 
-            sendo assim foram removidas algumas linhas que apresentavam esses valores extremos.
+            sendo assim foram removidas cerca de 269 linhas que apresentavam esses valores extremos.
             </p>""", unsafe_allow_html=True)
 
 # Centralizar todos os elementos da página

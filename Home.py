@@ -64,8 +64,8 @@ st.markdown(
     a melhorar seus serviços e tomar decisões mais informadas e precisas.
 
     #### Quer saber mais?
-    - [Artigo do projeto](https://docs.google.com/document/d/1i_8mR6b4knryxF9xFbUrW3NNg7GUYP-RoosVgll9K1k/edit?usp=sharing)
-    - [Github do projeto](https://github.com/eduardoesnc/SMD)
+ - [Artigo do projeto](https://docs.google.com/document/d/1i_8mR6b4knryxF9xFbUrW3NNg7GUYP-RoosVgll9K1k/edit?usp=sharing)
+ - [Github do projeto](https://github.com/eduardoesnc/SMD)
     
     <h2 style='text-align: center;'> Informações básicas do dataset </h2>
     <br>
