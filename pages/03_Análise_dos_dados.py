@@ -187,6 +187,23 @@ st.markdown("---")
 #
 # st.markdown("---")
 
+st.title("Análise da porcentagem da classificação de segurança pela NCAP entre os carros com o seguro ativado")
+# Restringindo para apenas aqueles em que o seguro foi ativado
+data = bf[bf['is_claim'] == 1]
+
+# Agrupando os valores por ncap_rating e contando a quantidade de ocorrências em cada grupo
+count = data.groupby(['ncap_rating'])['is_claim'].count().reset_index(name='count')
+
+# Calculando a porcentagem de ocorrências de cada ncap_rating em relação ao total de is_claim igual a 1
+count['Porcentagem'] = count['count'].apply(lambda x: (x/data.shape[0])*100)
+
+# Criando o gráfico de barras
+fig = px.bar(count, x='ncap_rating', y='Porcentagem', labels={'ncap_rating':'Classificação de segurança pela NCAP'})
+fig.update_traces(text=count['Porcentagem'].apply(lambda x: f'{round(x, 2)}%'))
+st.plotly_chart(fig)
+
+st.markdown("---")
+
 st.title("Análise de Taxas de Sinistro por Tipo de Veículo")
 
 # Carregando o dataset
