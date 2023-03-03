@@ -248,23 +248,13 @@ fig = px.scatter(bf, x='area_cluster', y='population_density',
 st.write(fig)
 
 st.markdown("---")
-# Um histograma seria uma boa escolha para visualizar a distribuição dos anos de fabricação dos carros.
-st.title("Análise da distribuição da idade do carro:")
-
-st.markdown("---")
 # Um gráfico de dispersão com a idade do carro no eixo x e o tipo de combustível no eixo y seria uma boa escolha para
 # visualizar a relação entre essas variáveis.
 st.title("Correlação entre idade do carro e tipo de combustível:")
 
-st.markdown("---")
-# Um gráfico de barras ou um gráfico de pizza pode ser útil para visualizar as frequências de cada segmento de carro
-# em cada faixa etária.
-st.title("Análise da relação entre idade do segurado e o segmento do carro")
-
-st.markdown("---")
-# Um gráfico de barras ou um gráfico de pizza pode ser útil para visualizar as frequências de cada segmento de carro
-# em cada faixa etária.
-st.title("Análise da relação entre idade do segurado e o segmento do carro")
+fig = px.scatter(bf, x='age_of_car', y='fuel_type',
+                 labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
+st.write(fig)
 
 st.markdown("---")
 # Um gráfico de barras ou um gráfico de pizza pode ser útil para visualizar as frequências de cada recurso de segurança
