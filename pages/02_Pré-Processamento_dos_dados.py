@@ -107,6 +107,9 @@ with col12:
     st.dataframe(df)
 
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
 st.markdown("<h2>Normalização do Tempo de seguro</h2>", unsafe_allow_html=True)
 st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
             A coluna que indica o Tempo de Seguro deve ser normalizada para que seus valores estejam em uma escala comum
@@ -126,6 +129,8 @@ with A2:
     st.dataframe(normPolicy)
 
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
 
 st.markdown("<h2>Altura, largura e comprimento para volume</h2>", unsafe_allow_html=True)
 st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
@@ -158,6 +163,8 @@ with B3:
     st.dataframe(normColumnVol)
 
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
 
 st.markdown("<h2>Outliers</h2>", unsafe_allow_html=True)
 st.markdown("""<p style="font-size: 14px;font-style: italic;color: gray; margin-top: 
@@ -211,6 +218,27 @@ st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: -20px">
             As colunas da idade do carro e da idade do segurado apontavam alguns valores muito diferentes do comum, 
             sendo assim foram removidas cerca de 269 linhas que apresentavam esses valores extremos.
             </p>""", unsafe_allow_html=True)
+
+st.markdown("---")
+# __________________________________________________________________________________________________________________ #
+
+# Botão para página de análise de dados
+st.markdown("""
+    <br><br><br><br>
+    <div style="text-align: center; margin-top: 60px;">
+    <a href="/Análise_dos_dados" target="_self"
+    style="text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 550;
+            background: rgb(243,68,55);
+            background: linear-gradient(156deg, rgba(243,68,55,1) 30%, rgba(249,170,61,1) 70%);
+            padding: 15px 40px;
+            border-radius: 8px;">
+    Análise exploratória dos dados
+    </a>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Centralizar todos os elementos da página
 st.markdown("""

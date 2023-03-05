@@ -1,10 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-# import seaborn as sns
 import plotly.express as px
-from sklearn.feature_selection import mutual_info_classif
 
 st.set_page_config(
     page_title="EDA",
@@ -47,9 +44,9 @@ def tratarDados(database):
     database = database.drop(['length', 'width', 'height'], axis=1)
 
     # Normalizar policy tenure com min max normalization
-    policy_df = bf['policy_tenure']
+    policy_df = database['policy_tenure']
     normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-    pd.concat([normPolicy, bf['is_claim']], axis=1)
+    pd.concat([normPolicy, database['is_claim']], axis=1)
 
     return database
 
@@ -132,20 +129,22 @@ if st.checkbox('Mostrar dataset'):
     st.dataframe(bf)
 
 # _____________GRÁFICOS USANDO STREAMLIT E PLOTLY________________ #
-st.header('Análises')
+st.header('Análise da chance de reivindicação')
 
 option = st.selectbox(
     'Seleciona um para comparar com a possibilidade de reivindicação dentro de 6 meses:',
     dict_nome_colunas)
 
 option = dict_nome_colunas.index(option)
-
-fig = px.bar(bf, x=nome_colunas[option], y='is_claim',
+data = bf[bf['is_claim'] == 1]
+fig = px.bar(data, x=nome_colunas[option], y='is_claim',
              labels={nome_colunas[option]: dict_nome_colunas[option], 'is_claim': 'Reinvidicados'})
 st.write(fig)
 
 st.caption('Gráficos para analisar como os valores das colunas interagem com a chance de reivindicação')
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
 
 # selecoes = st.sidebar.multiselect('Escolha duas opções e o tipo de gráfico desejado', nome_colunas)
 # tipoGrafico = st.sidebar.radio('', ['Linha', 'Barra'])
@@ -163,7 +162,9 @@ st.markdown("---")
 #
 # st.markdown("---")
 
-st.title(
+# __________________________________________________________________________________________________________________ #
+
+st.subheader(
     "Análise da porcentagem da classificação de segurança pela NCAP entre os carros com chance de reivindicar o seguro")
 # Restringindo para apenas aqueles em que o seguro foi ativado
 data = bf[bf['is_claim'] == 1]
@@ -179,9 +180,16 @@ fig = px.bar(count, x='ncap_rating', y='Porcentagem', labels={'ncap_rating': 'Cl
 fig.update_traces(text=count['Porcentagem'].apply(lambda x: f'{round(x, 2)}%'))
 st.plotly_chart(fig)
 
+st.caption('A análise da porcentagem da classificação de segurança pela NCAP entre os carros com chance de '
+           'reivindicar o seguro é importante para as seguradoras avaliarem o grau de segurança dos veículos de maior '
+           'risco e estabelecer critérios mais rigorosos para aceitação de seguros. Também incentiva a escolha de '
+           'modelos mais seguros pelos clientes, visando a redução dos sinistros e dos preços das apólices.')
+
 st.markdown("---")
 
-st.title("Análise de Probabilidade de Sinistro por Tipo de Veículo")
+# __________________________________________________________________________________________________________________ #
+
+st.subheader("Análise de Probabilidade de Sinistro por Tipo de Veículo")
 
 # Carregando o dataset
 # df = pd.read_csv('./data/train.csv')
@@ -197,10 +205,18 @@ grouped = df.groupby(['segment']).mean().reset_index()
 fig = px.bar(grouped, x='segment', y='is_claim', labels={'segment': 'Segmento do carro', 'is_claim': 'Reinvidicado'})
 st.write(fig)
 
+st.caption('A análise de probabilidade de sinistro por tipo de veículo é importante para as seguradoras, pois permite '
+           'avaliar o risco de acidentes envolvendo diferentes tipos de veículos e, consequentemente, estabelecer os '
+           'preços das apólices de seguro de forma mais justa e equilibrada. Além disso, essa análise também pode '
+           'ajudar a identificar possíveis problemas de segurança em determinados modelos de veículos e, assim, '
+           'incentivar melhorias na fabricação de carros mais seguros.')
+
 st.markdown("---")
 
+# __________________________________________________________________________________________________________________ #
+
 # Sugestão: Análise dos veículos com chance de sinistro pela idade do motorista
-st.title("Análise de Probabilidade de Sinistro pela Idade do Motorista")
+st.subheader("Análise de Probabilidade de Sinistro pela Idade do Motorista")
 
 # Selecionando apenas o grupo relevante
 df = bf[bf['is_claim'] == 1][['age_of_policyholder', 'is_claim']]
@@ -210,98 +226,177 @@ fig = px.violin(data_frame=df, y='age_of_policyholder', box=True,
                 points='all', labels={'age_of_policyholder': 'Idade do segurado'})
 
 st.write(fig)
+
+st.caption('A análise da probabilidade de sinistro pela idade do motorista é importante para as seguradoras definirem '
+           'preços adequados para as apólices de seguro e estabelecer políticas de prevenção de acidentes. A análise '
+           'também pode ajudar na criação de programas educacionais para um comportamento mais seguro no trânsito.')
+
 st.markdown("---")
 
-st.title("Análise da dispersão entre a idade do segurado e a idade do carro")
+# __________________________________________________________________________________________________________________ #
+
+st.subheader("Análise da dispersão entre a idade do segurado e a idade do carro")
 
 # Restringindo para apenas aqueles em que o seguro foi ativado
 df = bf[bf['is_claim'] == 1]
-# Criando o gráfico junto com a linha de tendência
+# Criando o gráfico com a linha de tendência
 fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols',
                  labels={'age_of_car': 'Idade do carro', 'age_of_policyholder': 'Idade do segurado'})
 
 # OBS: Caso não estiver a aparecer o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
 st.write(fig)
 
+st.caption('A análise da dispersão entre a idade do segurado e a idade do carro é importante porque permite entender '
+           'a relação entre essas variáveis e identificar se há uma tendência de acidentes com carros mais antigos '
+           'conduzidos por motoristas mais jovens. Essa análise auxilia na avaliação do risco de sinistros em carros '
+           'mais antigos e ajuda a definir políticas mais efetivas de renovação da frota e manutenção preventiva.')
+
 st.markdown("---")
 
-st.title("Análise do tipo de combustível usado pelos carros segurados")
+# __________________________________________________________________________________________________________________ #
+
+st.subheader("Análise do tipo de combustível usado pelos carros segurados")
 
 fig = px.histogram(bf, y='fuel_type', labels={'fuel_type': 'Tipo de combustível', 'count': 'Quantidade'})
 st.write(fig)
 
+st.caption('Essa análise é importante para as seguradoras entenderem o perfil dos veículos que estão sendo segurados '
+           'e as tendências de mercado em relação aos tipos de combustível mais utilizados. Isso pode ajudar a '
+           'definir preços mais adequados para as apólices de seguro, bem como a criar políticas e estratégias para '
+           'incentivar a adoção de veículos mais sustentáveis e econômicos em termos de combustível.')
 
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
 # um histograma que mostre o número de segurados em cada região ou estado.
-st.title("Análise da distribuição geográfica dos segurados:")
+st.subheader("Análise da distribuição geográfica dos segurados:")
 
 fig = px.histogram(bf, x="area_cluster", labels={'area_cluster': 'Área do Segurado', 'count': 'Quantidade'})
 st.write(fig)
 
+st.caption('A análise da distribuição geográfica dos segurados permite que as seguradoras entendam as características '
+           'de cada região, como índices de criminalidade e acidentes de trânsito, para ajustar preços e coberturas '
+           'de seguro de acordo com o perfil de risco. Também ajuda a desenvolver estratégias de marketing e '
+           'atendimento personalizadas para cada localidade.')
+
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
 # Um gráfico de dispersão com a densidade populacional no eixo x e a área do segurado no eixo y seria uma boa escolha
 # para visualizar a relação entre essas variáveis.
-st.title("Análise da relação entre a densidade populacional e a área do segurado:")
+st.subheader("Análise da relação entre a densidade populacional e a área do segurado:")
 
 fig = px.scatter(bf, x='area_cluster', y='population_density',
                  labels={'area_cluster': 'Área do Segurado', 'population_density': 'Densidade Populacional'})
 st.write(fig)
 
+st.caption('A análise da relação entre densidade populacional e área do segurado pode ser importante para as '
+           'seguradoras ajustarem preços e coberturas de acordo com o perfil de risco de cada área, '
+           'além de contribuir para a prevenção de acidentes e roubo de veículos em áreas de maior risco. Essa '
+           'análise pode ser útil para entender a demanda por seguros em diferentes áreas geográficas e as possíveis '
+           'influências dessas variáveis no risco de sinistro.')
+
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
 # Um gráfico de dispersão com a idade do carro no eixo x e o tipo de combustível no eixo y seria uma boa escolha para
 # visualizar a relação entre essas variáveis.
-st.title("Correlação entre idade do carro e tipo de combustível:")
+st.subheader("Relação entre idade do carro e tipo de combustível:")
 
 fig = px.scatter(bf, x='age_of_car', y='fuel_type',
                  labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
 st.write(fig)
 
+st.caption('Essa análise é importante para entender a relação entre a idade do carro e o tipo de combustível e como '
+           'isso afeta o risco de acidentes e o desempenho do veículo. As seguradoras podem usar essas informações '
+           'para ajustar preços e coberturas de seguro e incentivar o uso de combustíveis mais eficientes e '
+           'sustentáveis')
+
 st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
 # Um gráfico de barras ou um gráfico de pizza pode ser útil para visualizar as frequências de cada recurso de segurança
 # para cada classificação de segurança NCAP.
-st.title("Análise da relação entre a classificação de segurança NCAP e outros recursos de segurança:")
+st.subheader("Análise da relação entre a classificação de segurança NCAP e outros recursos de segurança:")
+
+Has_dict_colunas = [
+    'Tem controle de estabilização eletrônica?', 'Tem sistema de monitoramento da pressão do pneu?',
+    'Tem sensores de ré?',
+    'Tem câmera de ré?',
+    'Tem farol de neblina?', 'Tem limpador de vidro traseiro?', 'Tem desembaçador de vidro traseiro?',
+    'Tem assistência de freio?',
+    'Tem trava elétrica de porta?', 'Tem trava central?', 'Tem direção hidráulica?',
+    'Tem espelho de retrovisor traseiro?',
+    'Tem luz indicativa de problemas no motor?', 'Tem sistema de alerta de velocidade?']
+Has_nome_colunas = ['is_esc', 'is_tpms',
+                    'is_parking_sensors', 'is_parking_camera', 'is_front_fog_lights',
+                    'is_rear_window_washer',
+                    'is_rear_window_defogger', 'is_brake_assist', 'is_power_door_locks', 'is_central_locking',
+                    'is_power_steering', 'is_day_night_rear_view_mirror',
+                    'is_ecw', 'is_speed_alert', 'ncap_rating']
+
+HasOption = st.selectbox(
+    'Selecione:',
+    Has_dict_colunas)
+
+# Pegando o index para fazer as consultas nas listas criadas acima
+HasOption = Has_dict_colunas.index(HasOption)
+
+# Criando um dataset com apenas a classificação e a coluna desejada
+dfNcap = pd.concat([bf[Has_nome_colunas[HasOption]], bf['ncap_rating']], axis=1)
+dfNcap = dfNcap[dfNcap[Has_nome_colunas[HasOption]] == 'Yes']
+
+# Fazendo a contagem
+dfNcap_count = dfNcap.groupby(['ncap_rating'])[Has_nome_colunas[HasOption]].count().reset_index(
+    name=Has_nome_colunas[HasOption])
+
+fig = px.pie(dfNcap_count, values=Has_nome_colunas[HasOption], names='ncap_rating',
+             labels={Has_nome_colunas[HasOption]: Has_dict_colunas[HasOption], 'ncap_rating': 'Classificação de '
+                                                                                              'segurança NCAP'},
+             color_discrete_sequence=px.colors.qualitative.D3)
+fig.update_traces(textinfo='percent+label')
+
+st.write(fig)
+
+st.caption('A análise da relação entre a classificação de segurança NCAP e outros recursos de segurança é importante '
+           'para as seguradoras entenderem como essas variáveis podem influenciar no risco de acidentes e no custo '
+           'das apólices. Isso pode ajudar na definição de preços mais adequados e na criação de políticas de '
+           'prevenção de acidentes de trânsito, considerando fatores como a presença de sistemas de segurança e a '
+           'classificação NCAP do veículo.')
 
 st.markdown("---")
 
-# Gráfico Mutual Information Score
-# st.title("Mutual Information Score")
-# st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
-#             O Mutual Information Score é uma métrica de aprendizado de máquina que mede a dependência entre duas
-#             variáveis aleatórias. No caso do dataset que estamos trabalhando, estamos usando essa métrica para avaliar a
-#              relação entre as variáveis do dataset e a coluna is_claim.
-#             </p>""", unsafe_allow_html=True)
+# __________________________________________________________________________________________________________________ #
 
-# def make_mi_scores(X, y):
-#     X = X.copy()
-#     for colname in X.select_dtypes(["object", "category", "bool"]):
-#         X[colname], _ = X[colname].factorize()
-#     # All discrete features should now have integer dtypes
-#     discrete_features = [pd.api.types.is_integer_dtype(t) for t in X.dtypes]
-#     all_mi_scores = []
-#     for random_state in range(0, 5):
-#         miScores = mutual_info_classif(X, y, discrete_features=discrete_features, random_state=random_state)
-#         all_mi_scores.append(miScores)
-#     all_mi_scores = np.mean(all_mi_scores, axis=0)
-#     all_mi_scores = pd.Series(all_mi_scores, name="MI Scores", index=X.columns)
-#     all_mi_scores = all_mi_scores.sort_values(ascending=False)
-#     return all_mi_scores
-#
-#
-# def plot_mi_scores(scores):
-#     scores = scores.sort_values(ascending=True)
-#     width = np.arange(len(scores))
-#     ticks = list(scores.index)
-#     plt.barh(width, scores)
-#     plt.yticks(width, ticks)
-#     plt.title("Mutual Information Scores")
-#
-#
-# y_target = bf.is_claim.astype('int16')
-#
-# mi_scores = make_mi_scores(bf.drop('is_claim', axis=1), y_target)
-#
-# # print(mi_scores.head(20))
-# # print(mi_scores.tail(20))
-# plt.figure(dpi=100, figsize=(8, 5))
-# st.set_option('deprecation.showPyplotGlobalUse', False)
-# st.pyplot(plot_mi_scores(mi_scores.head(20)))
+# # Botão para página de Machine Learning
+# st.markdown("""
+#     <br><br><br><br>
+#     <div style="text-align: center; margin-top: 60px;">
+#     <a href="/Machine_Learning" target="_self"
+#     style="text-decoration: none;
+#             color: white;
+#             font-size: 18px;
+#             font-weight: 550;
+#             background: rgb(243,68,55);
+#             background: linear-gradient(156deg, rgba(243,68,55,1) 30%, rgba(249,170,61,1) 70%);
+#             padding: 15px 40px;
+#             border-radius: 8px;">
+#     Machine Learning
+#     </a>
+#     </div>
+#     """, unsafe_allow_html=True)
+
+# Centralizar todos os elementos da página
+st.markdown("""
+    <style>
+    .element-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
