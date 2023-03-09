@@ -189,7 +189,7 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-st.subheader("Análise de Probabilidade de Sinistro por Tipo de Veículo")
+st.subheader("Análise de Probabilidade de Sinistro por Segmento do Veículo")
 
 # Carregando o dataset
 # df = pd.read_csv('./data/train.csv')
@@ -227,9 +227,10 @@ fig = px.violin(data_frame=df, y='age_of_policyholder', box=True,
 
 st.write(fig)
 
-st.caption('A análise da probabilidade de sinistro pela idade do motorista é importante para as seguradoras definirem '
-           'preços adequados para as apólices de seguro e estabelecer políticas de prevenção de acidentes. A análise '
-           'também pode ajudar na criação de programas educacionais para um comportamento mais seguro no trânsito.')
+st.caption('A análise de dispersão da probabilidade de sinistro pela idade do motorista é importante para as '
+           'seguradoras definirem preços adequados para as apólices de seguro e estabelecer políticas de prevenção de '
+           'acidentes. A análise também pode ajudar na criação de programas educacionais para um comportamento mais '
+           'seguro no trânsito.')
 
 st.markdown("---")
 
@@ -304,7 +305,7 @@ st.markdown("---")
 
 # Um gráfico de dispersão com a idade do carro no eixo x e o tipo de combustível no eixo y seria uma boa escolha para
 # visualizar a relação entre essas variáveis.
-st.subheader("Relação entre idade do carro e tipo de combustível:")
+st.subheader("Análise da relação entre idade do carro e tipo de combustível:")
 
 fig = px.scatter(bf, x='age_of_car', y='fuel_type',
                  labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
