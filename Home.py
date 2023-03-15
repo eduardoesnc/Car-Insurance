@@ -25,22 +25,6 @@ def readData():
 
 bf = readData()
 
-# def tratarDados(df):
-# Idade do segurado
-# df['age_of_policyholder'] = round(df['age_of_policyholder'].mul(100))
-# max_torque e max_power
-# df["max_torque_Nm"] = df['max_torque'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*Nm)").astype('float64')
-# df["max_torque_rpm"] = df['max_torque'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-#
-# df["max_power_bhp"] = df['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*bhp)").astype('float64')
-# df["max_power_rpm"] = df['max_power'].str.extract(r"([-+]?[0-9]*\.?[0-9]+)(?=\s*rpm)").astype('float64')
-
-
-# tratarDados(bf)
-
-# st.sidebar.image('./assets/logo InsuranceTech.png', caption='InsuranceTech', use_column_width=True)
-# st.sidebar.header('Dashboard')
-
 st.title('Bem-vindo!')
 
 st.markdown(

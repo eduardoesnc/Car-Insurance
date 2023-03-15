@@ -29,7 +29,7 @@ bf = readData()  # Dataset Tratado
 df = readData()  # Dataset Cru
 
 
-def tratarDados(database):
+# def tratarDados(database):
     # Apagar coluna policy_id, já que são apenas IDs
     # database = database.drop(['policy_id'], axis=1)
 
@@ -42,7 +42,7 @@ def tratarDados(database):
     # normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
     # normPolicy = pd.concat([normPolicy, bf['is_claim']], axis=1)
 
-    return database
+    # return database
 
 
 # Criação de array com o nome de todas as colunas para facilitar na criação dos filtros
@@ -77,7 +77,7 @@ nome_colunas = ['age_of_car', 'age_of_policyholder', 'area_cluster', 'population
                 'is_power_steering', 'is_driver_seat_height_adjustable', 'is_day_night_rear_view_mirror',
                 'is_ecw', 'is_speed_alert', 'ncap_rating', 'is_claim']
 
-bf = tratarDados(bf)
+# bf = tratarDados(bf)
 numericos = bf.select_dtypes(include=[np.float64, np.int64])
 categoricos = bf.select_dtypes(include=[np.object])
 
@@ -110,25 +110,25 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-st.markdown("<h2>Normalização do Tempo de seguro</h2>", unsafe_allow_html=True)
-st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
-            A coluna que indica o Tempo de Seguro deve ser normalizada para que seus valores estejam em uma escala comum
-             e, assim, possamos trabalhar com mais eficiência no algoritmo de Machine Learning.
-            </p>""", unsafe_allow_html=True)
-A1, A2 = st.columns(2)
-with A1:
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Original</h5>", unsafe_allow_html=True)
-    columnsPT = bf['policy_tenure']
-    st.dataframe(columnsPT)
+# st.markdown("<h2>Normalização do Tempo de seguro</h2>", unsafe_allow_html=True)
+# st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
+#             A coluna que indica o Tempo de Seguro deve ser normalizada para que seus valores estejam em uma escala comum
+#              e, assim, possamos trabalhar com mais eficiência no algoritmo de Machine Learning.
+#             </p>""", unsafe_allow_html=True)
+# A1, A2 = st.columns(2)
+# with A1:
+#     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Original</h5>", unsafe_allow_html=True)
+#     columnsPT = bf['policy_tenure']
+#     st.dataframe(columnsPT)
 
-with A2:
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Normalizada</h5>", unsafe_allow_html=True)
-    policy_df = bf['policy_tenure']
-    normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-    normPolicy = pd.concat([normPolicy], axis=1)
-    st.dataframe(normPolicy)
+# with A2:
+#     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Normalizada</h5>", unsafe_allow_html=True)
+#     policy_df = bf['policy_tenure']
+#     normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
+#     normPolicy = pd.concat([normPolicy], axis=1)
+#     st.dataframe(normPolicy)
 
-st.markdown("---")
+# st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 

@@ -32,10 +32,6 @@ bf = readData()
 
 
 def tratarDados(database):
-    # Os seguintes dados já estão normalizados pela formula de min-max, tem que achar um jeito de reverter se necessário
-    # database['age_of_policyholder'] = round(database['age_of_policyholder'].mul(100))
-    # database['age_of_car'] = round(database['age_of_car'].mul(100))
-
     # Apagar coluna policy_id, já que são apenas IDs
     database = database.drop(['policy_id'], axis=1)
 
@@ -45,8 +41,7 @@ def tratarDados(database):
 
     # Normalizar policy tenure com min max normalization
     policy_df = database['policy_tenure']
-    normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-    pd.concat([normPolicy, database['is_claim']], axis=1)
+    database['policy_tenure'] = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
 
     return database
 
