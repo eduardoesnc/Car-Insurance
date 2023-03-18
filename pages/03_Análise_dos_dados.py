@@ -43,6 +43,11 @@ def tratarDados(database):
     policy_df = database['policy_tenure']
     database['policy_tenure'] = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
 
+    database['segment'] = database['segment'].replace('Utility', 'Utilitários')
+
+    database = database.replace({ "No" : False , "Yes" : True,  "Petrol" : "Gasolina" })
+
+
     return database
 
 
