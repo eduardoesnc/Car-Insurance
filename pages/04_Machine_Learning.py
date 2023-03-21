@@ -22,6 +22,8 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import MultinomialNB
 
 
 st.set_page_config(
@@ -130,6 +132,15 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
                    'is_driver_seat_height_adjustable': 'Banco do motorista é ajustável?',
                    'fuel_type': 'Tipo do combustível', 'is_parking_camera': 'Tem câmera de ré',
                    'transmission_type': 'Tipo de transmissão', 'length': 'Comprimento'}, inplace=True)
+
+#Verifica a correlação entre todas as colunas com o is_claim junto com o gráfico
+st.title("Correlação entre as colunas com o is_claim")
+st.write(df.corr()['is_claim'])
+
+corr_matrix = df.corr()
+fig, ax = plt.subplots(figsize = (10,8))
+sns.heatmap(corr_matrix[["is_claim"]], annot= True, cmap = 'coolwarm', ax= ax)
+st.pyplot(fig)
 
 # y_target = df.is_claim.astype('int16')
 
@@ -319,15 +330,7 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
 
 #    st.write(cm_fig)
 
-# -----------------------------------------------------LINEAR REGRESSION----------------------------------------------------- #
-#Verifica a correlação entre todas as colunas com o is_claim junto com o gráfico
-st.write(df.corr()['is_claim'])
-
-corr_matrix = df.corr()
-fig, ax = plt.subplots(figsize = (10,8))
-sns.heatmap(corr_matrix[["is_claim"]], annot= True, cmap = 'coolwarm', ax= ax)
-st.pyplot(fig)
-
+# -----------------------------------------------------Regressão linear, KNN, Naive Bayes----------------------------------------------------- #
 #Selecionando algumas colunas
 colunas_mantidas = ['is_claim', 'Idade do segurado', 'Idade do carro', 'Modelo', 'Tipo do combustível', 'Segmento', 'Tem assitência de freio', 'Tem câmera de ré', 'Tipo de transmissão']
 df = df[colunas_mantidas]
@@ -336,32 +339,41 @@ df = df[colunas_mantidas]
 y = df['is_claim']
 x = df.drop('is_claim', axis = 1)
 
-# Fazendo a reamostragem para equilibrar os valores de Y
 smt = SMOTEENN()
 x_res, y_res = smt.fit_resample(x, y)
 y_res.value_counts()
 
-#Dividindo entre treino e teste
 x_treino, x_teste, y_treino, y_teste = train_test_split(x_res, y_res, test_size = 0.2, random_state = 1)
 
-#Treinando o ml para regressão linear
+#Treinando o ml para regressão linear, KNN e Naive Bayes
 modeloRegressaoLinear = LinearRegression()
+modeloKNN = KNeighborsClassifier(n_neighbors=2)
+modeloNaiveBayes = MultinomialNB()
+
 modeloRegressaoLinear.fit(x_treino, y_treino)
+modeloKNN.fit(x_treino, y_treino)
+modeloNaiveBayes.fit(x_treino, y_treino)
+
 previsaoRegressaoLinear = modeloRegressaoLinear.predict(x_teste)
+previsaoKNN = modeloKNN.predict(x_teste)
+previsaoNaiveBayes = modeloNaiveBayes.predict(x_teste)
 
 #Mostra o resultado da avaliação
-st.title("Resultado da avaliação para linear regression")
-st.write(metrics.r2_score(y_teste, previsaoRegressaoLinear))
+#P/ Regressão linear
+st.title("Resultado da avaliação para regressão linear")
+st.write("accuracy =", metrics.r2_score(y_teste, previsaoRegressaoLinear))
 
-#Mostrando um gráfico da variação entre os valores do is_claim com a previsão da linear regression
-st.title("Relação gráfica entre os resultados de is_claim e as previsões dadas pelo linear regression")
-df_auxiliar = pd.DataFrame()
-df_auxiliar["y_teste"] = y_teste
-df_auxiliar["previsaoRegressaoLinear"] = previsaoRegressaoLinear
+#P/ KNN
+st.title("Resultado da avaliação para KNN")
+report = classification_report(y_teste, previsaoKNN, output_dict=True)
+df_report = pd.DataFrame(report).transpose()
+st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
 
-fig, ax = plt.subplots(figsize = (20,6))
-sns.lineplot(data = df_auxiliar, ax = ax)
-st.pyplot(fig)
+#P/ Naive Bayes
+st.title("Resultado da avaliação para Naive Bayes")
+report = classification_report(y_teste, previsaoNaiveBayes, output_dict=True)
+df_report = pd.DataFrame(report).transpose()
+st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
 
 st.title("Matriz de confusão")
 # Definindo o limite de decisão
@@ -370,17 +382,38 @@ limite = 0.5
 # Obtendo as previsões binárias com base no limite de decisão
 previsao_binaria = np.where(previsaoRegressaoLinear >= limite, 1, 0)
 
-# Criando a matriz de confusão
+# Criando a matriz de confusão para regressão linear
 matriz_confusao = metrics.confusion_matrix(y_teste, previsao_binaria)
 
-# Mostrando a matriz de confusão
+# Mostrando a matriz de confusão para regressão linear
 fig, ax = plt.subplots(figsize=(8, 6))
-sns.heatmap(matriz_confusao, annot=True, cmap='Blues', fmt='g')
-ax.set_xlabel('Previsão')
-ax.set_ylabel('Verdadeiro valor')
-ax.set_title('Matriz de confusão para o linear regression')
+sns.heatmap(matriz_confusao, annot=True, cmap='viridis', fmt='g')
+ax.set_xlabel('Valores reais')
+ax.set_ylabel('Valores previstos')
+ax.set_title('Matriz de confusão para a regressão linear')
 st.pyplot(fig)
 
+# Criando a matriz de confusão para KNN
+matriz_confusao = metrics.confusion_matrix(y_teste, previsaoKNN)
+
+# Mostrando a matriz de confusão para KNN
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.heatmap(matriz_confusao, annot=True, cmap='viridis', fmt='g')
+ax.set_xlabel('Valores reais')
+ax.set_ylabel('Valores previstos')
+ax.set_title('Matriz de confusão para o KNN')
+st.pyplot(fig)
+
+# Criando a matriz de confusão para Naive Bayer
+matriz_confusao = metrics.confusion_matrix(y_teste, previsaoNaiveBayes)
+
+# Mostrando a matriz de confusão para Naive Bayer
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.heatmap(matriz_confusao, annot=True, cmap='viridis', fmt='g')
+ax.set_xlabel('Valores reais')
+ax.set_ylabel('Valores previstos')
+ax.set_title('Matriz de confusão para o Naive Bayes')
+st.pyplot(fig)
 
 # PARA CENTRALIZAR OS GRÁFICOS E TABELAS NA PÁGINA (MANTER SEMPRE NO FINAL DO ARQUIVO)
 st.markdown("""
