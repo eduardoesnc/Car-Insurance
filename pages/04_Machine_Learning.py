@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from tkinter import *
+# from tkinter import *
 import matplotlib
 matplotlib.use('Agg')
 import seaborn as sns
@@ -128,7 +128,8 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
                    'cylinder': 'Quantidade de cilindros', 'is_front_fog_lights': 'Tem luz de neblina?',
                    'is_brake_assist': 'Tem assitência de freio',
                    'is_driver_seat_height_adjustable': 'Banco do motorista é ajustável?',
-                   'fuel_type': 'Tipo do combustível', 'is_parking_camera': 'Tem câmera de ré', 'transmission_type': 'Tipo de transmissão'}, inplace=True)
+                   'fuel_type': 'Tipo do combustível', 'is_parking_camera': 'Tem câmera de ré',
+                   'transmission_type': 'Tipo de transmissão', 'length': 'Comprimento'}, inplace=True)
 
 # y_target = df.is_claim.astype('int16')
 
@@ -196,9 +197,8 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
 
 #if st.checkbox('Mostrar código'):
 #    st.code("""
-# Selecionando as colunas Volume, Tempo de seguro, Idade do carro, Área do segurado, Densidade populacional, Idade do segurado, Modelo.
-#colsSelecionadasRF = ['Volume', 'Tempo de seguro', 'Idade do carro', 'Área do segurado', 'Densidade populacional',
-#                      'Idade do segurado', 'Modelo']
+# Selecionando as colunas Comprimento, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
+# colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
 
 #Criando dataframe temporário apenas com as colunas selecionadas
 #tempDF = df[colsSelecionadasRF]
@@ -239,7 +239,7 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
 #""")
 
 # Selecionando as colunas Volume, Tempo de seguro, Idade do carro, Área do segurado, Densidade populacional, Idade do segurado, Modelo.
-#colsSelecionadasRF = ['Volume', 'Tempo de seguro', 'Idade do carro', 'Área do segurado', 'Densidade populacional', 'Idade do segurado', 'Modelo']
+# colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
 
 #Criando dataframe temporário apenas com as colunas selecionadas
 #tempDF = df[colsSelecionadasRF]
@@ -319,16 +319,6 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
 
 #    st.write(cm_fig)
 
-#st.markdown("""
-#    <style>
-#    .element-container {
-#        display: flex;
-#        justify-content: center;
-#        align-items: center;
-#    }
-#    </style>
-#    """, unsafe_allow_html=True)
-
 # -----------------------------------------------------LINEAR REGRESSION----------------------------------------------------- #
 #Verifica a correlação entre todas as colunas com o is_claim junto com o gráfico
 st.write(df.corr()['is_claim'])
@@ -346,8 +336,13 @@ df = df[colunas_mantidas]
 y = df['is_claim']
 x = df.drop('is_claim', axis = 1)
 
+# Fazendo a reamostragem para equilibrar os valores de Y
+smt = SMOTEENN()
+x_res, y_res = smt.fit_resample(x, y)
+y_res.value_counts()
+
 #Dividindo entre treino e teste
-x_treino, x_teste, y_treino, y_teste = train_test_split(x, y, test_size = 0.2, random_state = 1)
+x_treino, x_teste, y_treino, y_teste = train_test_split(x_res, y_res, test_size = 0.2, random_state = 1)
 
 #Treinando o ml para regressão linear
 modeloRegressaoLinear = LinearRegression()
@@ -385,3 +380,15 @@ ax.set_xlabel('Previsão')
 ax.set_ylabel('Verdadeiro valor')
 ax.set_title('Matriz de confusão para o linear regression')
 st.pyplot(fig)
+
+
+# PARA CENTRALIZAR OS GRÁFICOS E TABELAS NA PÁGINA (MANTER SEMPRE NO FINAL DO ARQUIVO)
+st.markdown("""
+   <style>
+   .element-container {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+   }
+   </style>
+   """, unsafe_allow_html=True)
