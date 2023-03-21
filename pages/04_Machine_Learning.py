@@ -9,7 +9,7 @@ import seaborn as sns
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-from sklearn.feature_selection import mutual_info_classif
+from sklearn.feature_selection import mutual_info_classif, RFE, RFECV
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler, OrdinalEncoder, StandardScaler
@@ -55,7 +55,7 @@ def tratarDados(database):
 
     # Tranformar as colunas largura, tamanho e altura em apenas uma coluna chamada volume
     database['volume'] = np.log(database.length * database.width * database.height * 1e-6)
-    database = database.drop(['length', 'width', 'height'], axis=1)
+    # database = database.drop(['length', 'width', 'height'], axis=1)
 
     # Normalizar policy tenure com min max normalization
     # policy_df = database['policy_tenure']
@@ -70,7 +70,10 @@ def tratarDados(database):
     database = database.replace({ "No" : False , "Yes" : True })
 
     database['model'] = database['model'].replace({'M1': 0, 'M2': 1, 'M3': 2, 'M4': 3, 'M5': 4, 'M6': 5, 'M7': 6, 'M8': 7, 'M9': 8, 'M10': 9, 'M11': 10})
-    database['model'] = database['model'].astype('float64')
+    database['model'] = database['model'].astype('int64')
+
+    database['area_cluster'] = database['area_cluster'].replace({'C1': 0, 'C2': 1, 'C3': 2, 'C4': 3, 'C5': 4, 'C6': 5, 'C7': 6, 'C8': 7, 'C9': 8, 'C10': 9, 'C11': 10, 'C12': 11, 'C13': 12, 'C14': 13, 'C15': 14, 'C16': 15, 'C17': 16, 'C18': 17, 'C19': 18, 'C20': 19, 'C21': 20, 'C22': 21})
+    database['area_cluster'] = database['area_cluster'].astype('int64')
 
     database['fuel_type'] = database['fuel_type'].replace({'CNG': 0, 'Diesel': 1, 'Petrol': 2,})
     database['fuel_type'] = database['fuel_type'].astype('float64')
@@ -128,19 +131,19 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
                    'displacement': 'cilindradas (cc)', 'max_torque': 'Torque máximo', 'max_power': 'Força máxima',
                    'segment': 'Segmento', 'is_adjustable_steering': 'Volante ajustável?',
                    'cylinder': 'Quantidade de cilindros', 'is_front_fog_lights': 'Tem luz de neblina?',
-                   'is_brake_assist': 'Tem assitência de freio',
+                   'is_brake_assist': 'Tem assitência de freio', 'length': 'Comprimento',
                    'is_driver_seat_height_adjustable': 'Banco do motorista é ajustável?',
                    'fuel_type': 'Tipo do combustível', 'is_parking_camera': 'Tem câmera de ré',
-                   'transmission_type': 'Tipo de transmissão', 'length': 'Comprimento'}, inplace=True)
+                   'transmission_type': 'Tipo de transmissão'}, inplace=True)
 
 #Verifica a correlação entre todas as colunas com o is_claim junto com o gráfico
-st.title("Correlação entre as colunas com o is_claim")
-st.write(df.corr()['is_claim'])
+# st.title("Correlação entre as colunas com o is_claim")
+# st.write(df.corr()['is_claim'])
 
-corr_matrix = df.corr()
-fig, ax = plt.subplots(figsize = (10,8))
-sns.heatmap(corr_matrix[["is_claim"]], annot= True, cmap = 'coolwarm', ax= ax)
-st.pyplot(fig)
+# corr_matrix = df.corr()
+# fig, ax = plt.subplots(figsize = (10,8))
+# sns.heatmap(corr_matrix[["is_claim"]], annot= True, cmap = 'coolwarm', ax= ax)
+# st.pyplot(fig)
 
 # y_target = df.is_claim.astype('int16')
 
@@ -200,114 +203,115 @@ st.pyplot(fig)
 
 
 # -----------------------------------------------------RANDOM FOREST----------------------------------------------------- #
-#st.markdown("---")
-#st.subheader("Random Forest")
-#st.markdown("""<p style="font-size: 16px;">
+# st.markdown("---")
+# st.subheader("Random Forest")
+# st.markdown("""<p style="font-size: 16px;">
 #            Features selecionadas: Volume, Tempo de seguro, Idade do carro, Área do segurado, Densidade populacional, Idade do segurado, Modelo.
 #            </p>""", unsafe_allow_html=True)
 
-#if st.checkbox('Mostrar código'):
+# if st.checkbox('Mostrar código'):
 #    st.code("""
 # Selecionando as colunas Comprimento, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
 # colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
 
-#Criando dataframe temporário apenas com as colunas selecionadas
-#tempDF = df[colsSelecionadasRF]
+# Criando dataframe temporário apenas com as colunas selecionadas
+# tempDF = df[colsSelecionadasRF]
 
-#Selecionando as colunas Categóricas
-#categorical_cols = tempDF.select_dtypes(include=['object']).columns
+# Selecionando as colunas Categóricas
+# categorical_cols = tempDF.select_dtypes(include=['object']).columns
 
 # Convertendo as colunas categóricas em variáveis de indicação
-#dfRF = pd.get_dummies(tempDF, columns=categorical_cols)
+# dfRF = pd.get_dummies(tempDF, columns=categorical_cols)
 
 # Atribuindo as colunas selecionadas a X
-#x = dfRF
+# x = dfRF
 
 # Atribuindo a coluna alvo a Y
-#y = df["is_claim"]
+# y = df["is_claim"]
 
 # Fazendo a reamostragem para equilibrar os valores de Y
-#smt = SMOTEENN()
-#X_res, y_res = smt.fit_resample(x, y)
-#y_res.value_counts()
+# smt = SMOTEENN()
+# X_res, y_res = smt.fit_resample(x, y)
+# y_res.value_counts()
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-#x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.20)
+# x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.20)
 
 # Inicializando o algoritmo Random Forest
-#classifier = RandomForestClassifier()
+# classifier = RandomForestClassifier()
 
 # Construindo uma 'floreste de árvores' da parte de treino
-#classifier.fit(x_train,y_train)
+# classifier.fit(x_train,y_train)
 
 # Realizando as previsões
-#preds = classifier.predict(x_test)
+# preds = classifier.predict(x_test)
 
 # Criando o relatório com as principais métricas da classificação
-#report = classification_report(y_test, preds, output_dict=True)
-#df_report = pd.DataFrame(report).transpose()
-#st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
-#""")
+# report = classification_report(y_test, preds, output_dict=True)
+# df_report = pd.DataFrame(report).transpose()
+# st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
+# """)
 
-# Selecionando as colunas Volume, Tempo de seguro, Idade do carro, Área do segurado, Densidade populacional, Idade do segurado, Modelo.
+# # Selecionando as colunas Comprimento, Tempo de seguro, Idade do carro, Área do segurado, Densidade populacional, Idade do segurado, Modelo.
 # colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
 
-#Criando dataframe temporário apenas com as colunas selecionadas
-#tempDF = df[colsSelecionadasRF]
+# # Criando dataframe temporário apenas com as colunas selecionadas
+# tempDF = df[colsSelecionadasRF]
 
-#Selecionando as colunas Categóricas
-#categorical_cols = tempDF.select_dtypes(include=['object']).columns
+# # Selecionando as colunas Categóricas
+# categorical_cols = tempDF.select_dtypes(include=['object']).columns
 
-# Convertendo as colunas categóricas em variáveis de indicação
-#dfRF = pd.get_dummies(tempDF, columns=categorical_cols)
+# # Convertendo as colunas categóricas em variáveis de indicação
+# dfRF = pd.get_dummies(tempDF, columns=categorical_cols)
 
-# Mostrar as variáveis de indicação criadas
+# # Mostrar as variáveis de indicação criadas
 # dfRF.info(verbose = True)
 
-# Atribuindo as colunas selecionadas a X
-#x = dfRF
+# # Atribuindo as colunas selecionadas a X
+# x = dfRF
 
-# Atribuindo a coluna alvo a Y
-#y = df["is_claim"]
+# # Atribuindo a coluna alvo a Y
+# y = df["is_claim"]
 
-# Fazendo a reamostragem para equilibrar os valores de Y
-#smt = SMOTEENN()
-#X_res, y_res = smt.fit_resample(x, y)
-#y_res.value_counts()
+# # Fazendo a reamostragem para equilibrar os valores de Y
+# smt = SMOTEENN()
+# X_res, y_res = smt.fit_resample(x, y)
+# y_res.value_counts()
 
-# Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-#x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.20)
+# # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
+# x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.20)
 
-# Inicializando o algoritmo Random Forest
-#classifier = RandomForestClassifier()
+# # Inicializando o algoritmo Random Forest
+# classifier = RandomForestClassifier()
+# classifier = XGBClassifier()
  
- # Construindo uma 'floreste de árvores' da parte de treino
-#classifier.fit(x_train,y_train)
+# #  Construindo uma 'floreste de árvores' da parte de treino
+# classifier.fit(x_train,y_train)
 
-# Realizando as previsões
-#preds = classifier.predict(x_test)
+# # Realizando as previsões
+# preds = classifier.predict(x_test)
 
-# Criando o relatório com as principais métricas da classificação
-#report = classification_report(y_test, preds, output_dict=True)
-#df_report = pd.DataFrame(report).transpose()
+# # Criando o relatório com as principais métricas da classificação
+# report = classification_report(y_test, preds, output_dict=True)
+# df_report = pd.DataFrame(report).transpose()
 
-#st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
+# st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
 
-# Feature Importance
-#importance = classifier.feature_importances_
-#feature_importance = pd.DataFrame({'Feature': x.columns, 'Importance': importance})
-#feature_importance = feature_importance.sort_values('Importance', ascending=True).reset_index(drop=True)
-#feature_importance = feature_importance.tail(15)
+# # Feature Importance
+# importance = classifier.feature_importances_
+# feature_importance = pd.DataFrame({'Feature': x.columns, 'Importance': importance})
+# feature_importance = feature_importance.sort_values('Importance', ascending=True).reset_index(drop=True)
+# feature_importance = feature_importance.tail(15)
 # print(feature_importance)
-#fig = px.bar(feature_importance, x='Importance', y='Feature', title='Feature Importance')
+# fig = px.bar(feature_importance, x='Importance', y='Feature', title='Feature Importance')
 
-#st.write(fig)
+# st.write(fig)
 
-#A1, A2 = st.columns(2)
-#cm = confusion_matrix(y_test, preds)
+# A1, A2 = st.columns(2)
+# cm = confusion_matrix(y_test, preds)
 # print(cm)
 
-#with A1:
+# with A1:
 #    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão</h5>", unsafe_allow_html=True)
 #    categories1 = ['Neg.', 'Pos.']
 #    categories2 = ['Neg.', 'Pos.']
@@ -321,7 +325,7 @@ st.pyplot(fig)
 
 #    st.write(heatmap_fig)
 
-#with A2:
+# with A2:
 #    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão</h5>", unsafe_allow_html=True)
 #    cm_flat = cm.flatten()
 #    cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
@@ -386,34 +390,88 @@ previsao_binaria = np.where(previsaoRegressaoLinear >= limite, 1, 0)
 matriz_confusao = metrics.confusion_matrix(y_teste, previsao_binaria)
 
 # Mostrando a matriz de confusão para regressão linear
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.heatmap(matriz_confusao, annot=True, cmap='viridis', fmt='g')
-ax.set_xlabel('Valores reais')
-ax.set_ylabel('Valores previstos')
-ax.set_title('Matriz de confusão para a regressão linear')
-st.pyplot(fig)
+A1, A2 = st.columns(2)
+
+with A1:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão Linear</h5>", unsafe_allow_html=True)
+    categories1 = ['Neg.', 'Pos.']
+    categories2 = ['Neg.', 'Pos.']
+
+    heatmap_fig = px.imshow(matriz_confusao, x=categories1, y=categories2, color_continuous_scale='rdylgn')
+    heatmap_fig.update_layout(
+        xaxis={'title': 'Valores Reais'},
+        yaxis={'title': 'Valores Preditos'},
+        width=500, height=500
+    )
+
+    st.write(heatmap_fig)
+
+with A2:
+   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão Linear</h5>", unsafe_allow_html=True)
+   cm_flat = matriz_confusao.flatten()
+   cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
+   cm_fig.update_traces(textinfo='percent+label')
+   cm_fig.update_layout(showlegend=False)
+
+   st.write(cm_fig)
 
 # Criando a matriz de confusão para KNN
 matriz_confusao = metrics.confusion_matrix(y_teste, previsaoKNN)
 
 # Mostrando a matriz de confusão para KNN
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.heatmap(matriz_confusao, annot=True, cmap='viridis', fmt='g')
-ax.set_xlabel('Valores reais')
-ax.set_ylabel('Valores previstos')
-ax.set_title('Matriz de confusão para o KNN')
-st.pyplot(fig)
+A1, A2 = st.columns(2)
+
+with A1:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão KNN</h5>", unsafe_allow_html=True)
+    categories1 = ['Neg.', 'Pos.']
+    categories2 = ['Neg.', 'Pos.']
+
+    heatmap_fig = px.imshow(matriz_confusao, x=categories1, y=categories2, color_continuous_scale='rdylgn')
+    heatmap_fig.update_layout(
+        xaxis={'title': 'Valores Reais'},
+        yaxis={'title': 'Valores Preditos'},
+        width=500, height=500
+    )
+
+    st.write(heatmap_fig)
+
+with A2:
+   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão KNN</h5>", unsafe_allow_html=True)
+   cm_flat = matriz_confusao.flatten()
+   cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
+   cm_fig.update_traces(textinfo='percent+label')
+   cm_fig.update_layout(showlegend=False)
+
+   st.write(cm_fig)
 
 # Criando a matriz de confusão para Naive Bayer
 matriz_confusao = metrics.confusion_matrix(y_teste, previsaoNaiveBayes)
 
 # Mostrando a matriz de confusão para Naive Bayer
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.heatmap(matriz_confusao, annot=True, cmap='viridis', fmt='g')
-ax.set_xlabel('Valores reais')
-ax.set_ylabel('Valores previstos')
-ax.set_title('Matriz de confusão para o Naive Bayes')
-st.pyplot(fig)
+A1, A2 = st.columns(2)
+
+with A1:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão NB</h5>", unsafe_allow_html=True)
+    categories1 = ['Neg.', 'Pos.']
+    categories2 = ['Neg.', 'Pos.']
+
+    heatmap_fig = px.imshow(matriz_confusao, x=categories1, y=categories2, color_continuous_scale='rdylgn')
+    heatmap_fig.update_layout(
+        xaxis={'title': 'Valores Reais'},
+        yaxis={'title': 'Valores Preditos'},
+        width=500, height=500
+    )
+
+    st.write(heatmap_fig)
+
+with A2:
+   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão NB</h5>", unsafe_allow_html=True)
+   cm_flat = matriz_confusao.flatten()
+   cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
+   cm_fig.update_traces(textinfo='percent+label')
+   cm_fig.update_layout(showlegend=False)
+
+   st.write(cm_fig)
 
 # PARA CENTRALIZAR OS GRÁFICOS E TABELAS NA PÁGINA (MANTER SEMPRE NO FINAL DO ARQUIVO)
 st.markdown("""

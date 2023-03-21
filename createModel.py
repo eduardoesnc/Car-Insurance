@@ -65,9 +65,6 @@ df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaç
                    'fuel_type': 'Tipo do combustível', 'is_parking_camera': 'Tem câmera de ré',
                    'transmission_type': 'Tipo de transmissão', 'length': 'Comprimento'}, inplace=True)
 
-# # Selecionando as colunas Volume, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
-# colsSelecionadasRF = ['Volume', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
-
 # Selecionando as colunas Comprimento, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
 colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
 

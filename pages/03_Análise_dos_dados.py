@@ -37,7 +37,6 @@ def tratarDados(database):
 
     # Tranformar as colunas largura, tamanho e altura em apenas uma coluna chamada volume
     database['volume'] = np.log(database.length * database.width * database.height * 1e-6)
-    database = database.drop(['length', 'width', 'height'], axis=1)
 
     # Normalizar policy tenure com min max normalization
     policy_df = database['policy_tenure']
@@ -64,7 +63,7 @@ dict_nome_colunas = ['Idade do carro normalizada', 'Idade do segurado normalizad
                      'Tem câmera de ré?', 'Tipo de freio usado no carro', 'Cilindradas do motor (cc)',
                      'Quantidade de cilindros do carro',
                      'Tipo de transmissão do carro', 'Quantidade de marchas do carro', 'Tipo de direção do carro',
-                     'Espaço necessário pro carro fazer uma certa curva',
+                     'Espaço necessário pro carro fazer uma certa curva', 'Comprimento do carro', 'Largura do carro', 'Altura do carrro'
                      'Volume do carro', 'Peso máximo suportado pelo carro',
                      'Tem farol de neblina?', 'Tem limpador de vidro traseiro?', 'Tem desembaçador de vidro traseiro?',
                      'Tem assistência de freio?',
@@ -77,7 +76,7 @@ nome_colunas = ['age_of_car', 'age_of_policyholder', 'area_cluster', 'population
                 'is_adjustable_steering', 'is_tpms',
                 'is_parking_sensors', 'is_parking_camera', 'rear_brakes_type', 'displacement', 'cylinder',
                 'transmission_type', 'gear_box', 'steering_type',
-                'turning_radius', 'volume', 'gross_weight', 'is_front_fog_lights', 'is_rear_window_wiper',
+                'turning_radius', 'length', 'width', 'height', 'volume', 'gross_weight', 'is_front_fog_lights', 'is_rear_window_wiper',
                 'is_rear_window_washer',
                 'is_rear_window_defogger', 'is_brake_assist', 'is_power_door_locks', 'is_central_locking',
                 'is_power_steering', 'is_driver_seat_height_adjustable', 'is_day_night_rear_view_mirror',
