@@ -351,7 +351,7 @@ x_treino, x_teste, y_treino, y_teste = train_test_split(x_res, y_res, test_size 
 
 #Treinando o ml para regressão linear, KNN e Naive Bayes
 modeloRegressaoLinear = LinearRegression()
-modeloKNN = KNeighborsClassifier(n_neighbors=2)
+modeloKNN = KNeighborsClassifier(n_neighbors=1)
 modeloNaiveBayes = MultinomialNB()
 
 modeloRegressaoLinear.fit(x_treino, y_treino)
@@ -393,7 +393,7 @@ matriz_confusao = metrics.confusion_matrix(y_teste, previsao_binaria)
 A1, A2 = st.columns(2)
 
 with A1:
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão Linear</h5>", unsafe_allow_html=True)
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão para regressão linear</h5>", unsafe_allow_html=True)
     categories1 = ['Neg.', 'Pos.']
     categories2 = ['Neg.', 'Pos.']
 
@@ -407,7 +407,7 @@ with A1:
     st.write(heatmap_fig)
 
 with A2:
-   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão Linear</h5>", unsafe_allow_html=True)
+   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão para regressão linear</h5>", unsafe_allow_html=True)
    cm_flat = matriz_confusao.flatten()
    cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
    cm_fig.update_traces(textinfo='percent+label')
@@ -422,7 +422,7 @@ matriz_confusao = metrics.confusion_matrix(y_teste, previsaoKNN)
 A1, A2 = st.columns(2)
 
 with A1:
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão KNN</h5>", unsafe_allow_html=True)
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão para KNN</h5>", unsafe_allow_html=True)
     categories1 = ['Neg.', 'Pos.']
     categories2 = ['Neg.', 'Pos.']
 
@@ -436,7 +436,7 @@ with A1:
     st.write(heatmap_fig)
 
 with A2:
-   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão KNN</h5>", unsafe_allow_html=True)
+   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão para KNN</h5>", unsafe_allow_html=True)
    cm_flat = matriz_confusao.flatten()
    cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
    cm_fig.update_traces(textinfo='percent+label')
@@ -451,7 +451,7 @@ matriz_confusao = metrics.confusion_matrix(y_teste, previsaoNaiveBayes)
 A1, A2 = st.columns(2)
 
 with A1:
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão NB</h5>", unsafe_allow_html=True)
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão para Naive Bayes</h5>", unsafe_allow_html=True)
     categories1 = ['Neg.', 'Pos.']
     categories2 = ['Neg.', 'Pos.']
 
@@ -465,7 +465,7 @@ with A1:
     st.write(heatmap_fig)
 
 with A2:
-   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão NB</h5>", unsafe_allow_html=True)
+   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão para Naive Bayes</h5>", unsafe_allow_html=True)
    cm_flat = matriz_confusao.flatten()
    cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
    cm_fig.update_traces(textinfo='percent+label')
