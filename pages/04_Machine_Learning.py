@@ -362,6 +362,18 @@ previsaoRegressaoLinear = modeloRegressaoLinear.predict(x_teste)
 previsaoKNN = modeloKNN.predict(x_teste)
 previsaoNaiveBayes = modeloNaiveBayes.predict(x_teste)
 
+#k_range = range(1, 21)
+#scores = []
+
+#for k in k_range:
+#    modeloKNN = KNeighborsClassifier(n_neighbors=k)
+#    modeloKNN.fit(x_treino, y_treino)
+#    previsaoKNN = modeloKNN.predict(x_teste)
+#    scores.append(metrics.accuracy_score(y_teste, previsaoKNN))
+
+#for i, item in enumerate(scores):
+#    st.write(f"{i+1} vizinhos: {item}")
+
 #Mostra o resultado da avaliação
 #P/ Regressão linear
 st.title("Resultado da avaliação para regressão linear")
