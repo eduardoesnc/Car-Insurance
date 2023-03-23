@@ -1,3 +1,5 @@
+# POR ENQUANTO ESSA TELA É APENAS PARA TESTES DA WEBVIEW
+
 import streamlit as st
 import pickle
 
@@ -19,7 +21,7 @@ st.markdown("""<h1 style='text-align: center; margin-top: -60px'>Realizar Estima
 
 # comprimento, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
 
-comprimento = st.number_input('Comprimento em mm:')
+comprimento = st.number_input('Comprimento em mm:', key='comprimentoInput')
 
 tempoSeguro = st.number_input('Tempo de Seguro:')
 
