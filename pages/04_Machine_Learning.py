@@ -17,6 +17,7 @@ from sklearn.model_selection import train_test_split
 from collections import Counter
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import SMOTENC
+from imblearn.under_sampling import TomekLinks
 from xgboost import XGBClassifier
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.ensemble import RandomForestClassifier
@@ -215,7 +216,14 @@ if st.checkbox('Mostrar código'):
 colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
 
 # Criando dataframe temporário apenas com as colunas selecionadas
-dfRF = df
+dfRF = df.copy()
+
+dfRF_zeros = dfRF[dfRF['is_claim'] == 0]
+dfRF_ones = dfRF[dfRF['is_claim'] == 1]
+dfRF_zeros = dfRF_zeros.sample(frac=0.5, random_state=1)
+dfRF_final = pd.concat([dfRF_zeros, dfRF_ones], ignore_index=True)
+dfRF = dfRF_final
+
 
 # Selecionando as colunas Categóricas
 categorical_cols = dfRF.select_dtypes(include=['object']).columns
@@ -226,25 +234,25 @@ dfRF = pd.get_dummies(dfRF, columns=categorical_cols)
 # Mostrar as variáveis de indicação criadas
 dfRF.info(verbose = True)
 
-# Atribuindo as colunas selecionadas a X
-# x = dfRF
+# Retirando a coluna alvo
 x = dfRF.drop(['is_claim'], axis = 1)
 
 # Atribuindo a coluna alvo a Y
-y = df["is_claim"]
+y = dfRF["is_claim"]
 
 # Fazendo a reamostragem para equilibrar os valores de Y
 smt = SMOTEENN()
 X_res, y_res = smt.fit_resample(x, y)
 X_res = X_res[colsSelecionadasRF]
 
-y_res.value_counts()
+print(y.value_counts())
+print(y_res.value_counts())
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.20)
+x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
 
 # Inicializando o algoritmo Random Forest
-classifier = RandomForestClassifier()
+classifier = RandomForestClassifier(class_weight='balanced')
 # classifier = XGBClassifier()
  
 #  Construindo uma 'floreste de árvores' da parte de treino
@@ -264,7 +272,22 @@ st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-
 colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
 
 # Criando dataframe temporário apenas com as colunas selecionadas
-dfRF = df
+dfRF = df.copy()
+
+# dfRF_zeros = dfRF[dfRF['is_claim'] == 0]
+# dfRF_ones = dfRF[dfRF['is_claim'] == 1]
+# n = min(len(dfRF_zeros), len(dfRF_ones))
+# dfRF_zeros = dfRF_zeros.sample(n=n, random_state=1)
+# dfRF_ones = dfRF_ones.sample(n=n, random_state=1)
+# dfRF_final = pd.concat([dfRF_zeros, dfRF_ones], ignore_index=True)
+# dfRF = dfRF_final
+
+dfRF_zeros = dfRF[dfRF['is_claim'] == 0]
+dfRF_ones = dfRF[dfRF['is_claim'] == 1]
+dfRF_zeros = dfRF_zeros.sample(frac=0.5, random_state=1)
+dfRF_final = pd.concat([dfRF_zeros, dfRF_ones], ignore_index=True)
+dfRF = dfRF_final
+
 
 # Selecionando as colunas Categóricas
 categorical_cols = dfRF.select_dtypes(include=['object']).columns
@@ -272,28 +295,31 @@ categorical_cols = dfRF.select_dtypes(include=['object']).columns
 # Convertendo as colunas categóricas em variáveis de indicação
 dfRF = pd.get_dummies(dfRF, columns=categorical_cols)
 
-# Mostrar as variáveis de indicação criadas
+# # Mostrar as variáveis de indicação criadas
 dfRF.info(verbose = True)
 
-# Atribuindo as colunas selecionadas a X
-# x = dfRF
+# Retirando a coluna alvo
 x = dfRF.drop(['is_claim'], axis = 1)
 
 # Atribuindo a coluna alvo a Y
-y = df["is_claim"]
+y = dfRF["is_claim"]
 
 # Fazendo a reamostragem para equilibrar os valores de Y
 smt = SMOTEENN()
 X_res, y_res = smt.fit_resample(x, y)
 X_res = X_res[colsSelecionadasRF]
 
-y_res.value_counts()
+# X_res = x[colsSelecionadasRF]
+# y_res = y
+
+print(y.value_counts())
+print(y_res.value_counts())
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.20)
+x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
 
 # Inicializando o algoritmo Random Forest
-classifier = RandomForestClassifier()
+classifier = RandomForestClassifier(class_weight='balanced')
 # classifier = XGBClassifier()
  
 #  Construindo uma 'floreste de árvores' da parte de treino

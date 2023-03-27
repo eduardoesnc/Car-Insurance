@@ -1,4 +1,4 @@
-# POR ENQUANTO ESSA TELA É APENAS PARA TESTES DA WEBVIEW
+# POR ENQUANTO ESSA TELA É APENAS PARA TESTES DA WEBVIEW, APÓS A DEFINIÇÃO DO ML ELA PODERÁ SER FINALIZADA
 
 import streamlit as st
 import pickle
@@ -21,22 +21,48 @@ st.markdown("""<h1 style='text-align: center; margin-top: -60px'>Realizar Estima
 
 # comprimento, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
 
-comprimento = st.number_input('Comprimento em mm:', key='comprimentoInput')
+A1, A2, A3 = st.columns(3)
 
-tempoSeguro = st.number_input('Tempo de Seguro:')
+with A1:
+    tempoSeguro = st.number_input('Tempo de Seguro em anos:')
+    st.markdown("""<p style='font-size: 14px;
+                    font-weight: 550;
+                    margin-top: -15px;
+                    color: #9c9d9f;'>
+                    Ex.: 0,5 representa 6 meses</p> """, unsafe_allow_html=True)
 
-idadeCarro = st.number_input('Idade do Carro:')
+with A2: 
+    idadeCarro = st.number_input('Idade do Carro em anos:')
+    st.markdown("""<p style='font-size: 14px;
+                    font-weight: 550;
+                    margin-top: -15px;
+                    color: #9c9d9f;'>
+                    Ex.: 0,5 representa 6 meses</p> """, unsafe_allow_html=True)
 
-idadeSegurado = st.number_input('Idade do Segurado:')
+with A3: 
+    idadeSegurado = st.number_input('Idade do Segurado em anos:')
+    st.markdown("""<p style='font-size: 14px;
+                    font-weight: 550;
+                    margin-top: -15px;
+                    color: #9c9d9f;'>
+                    Ex.: 0,5 representa 6 meses</p> """, unsafe_allow_html=True)
 
-areaSeguradoList = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C11', 'C12',
-                    'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21', 'C22']
+B1, B2, B3 = st.columns(3)
 
-areaSegurado = st.selectbox('Área do Segurado', areaSeguradoList)
+with B1: 
+    comprimento = st.number_input('Comprimento em metros:', key='comprimentoInput')
+    comprimento = comprimento * 1000 # Transformando de metros para milímetros
 
-modeloCarroList = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11']
+with B2:
+    areaSeguradoList = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C11', 'C12',
+                        'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21', 'C22']
 
-modeloCarro = st.selectbox('Modelo do Carro', modeloCarroList)
+    areaSegurado = st.selectbox('Área do Segurado', areaSeguradoList)
+
+with B3:
+    modeloCarroList = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11']
+
+    modeloCarro = st.selectbox('Modelo do Carro', modeloCarroList)
 
 def make_prediction(comprimento,tempoSeguro, idadeCarro, 
                     idadeSegurado, areaSegurado, modeloCarro):
@@ -68,7 +94,6 @@ if st.button("Estimar"):
     else:
         st.success("Pouca chance de reivindicar o seguro")
         
-st.markdown("""<br>""", unsafe_allow_html=True)
 st.caption('Apenas realizamos estimativas')
 
 
