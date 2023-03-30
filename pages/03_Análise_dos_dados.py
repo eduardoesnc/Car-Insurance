@@ -110,7 +110,7 @@ st.download_button(
 
 bf = tratarDados(bf)
 numericos = bf.select_dtypes(include=[np.float64, np.int64])
-categoricos = bf.select_dtypes(include=[np.object])
+categoricos = bf.select_dtypes(include=[object])
 
 # ___________________________________________________#
 
