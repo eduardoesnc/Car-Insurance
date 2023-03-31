@@ -26,24 +26,6 @@ def readData():
 
 
 bf = readData()  # Dataset Tratado
-df = readData()  # Dataset Cru
-
-
-# def tratarDados(database):
-    # Apagar coluna policy_id, já que são apenas IDs
-    # database = database.drop(['policy_id'], axis=1)
-
-    # # Tranformar as colunas largura tamanho e altura em apenas uma coluna chamada volume
-    # database['volume'] = np.log(database.length * database.width * database.height * 1e-6)
-    # database = database.drop(['length', 'width', 'height'], axis=1)
-
-    # Normalizar policy tenure com min max normalization
-    # policy_df = bf['policy_tenure']
-    # normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-    # normPolicy = pd.concat([normPolicy, bf['is_claim']], axis=1)
-
-    # return database
-
 
 # Criação de array com o nome de todas as colunas para facilitar na criação dos filtros
 dict_nome_colunas = ['Idade do carro normalizada', 'Idade do segurado normalizada', 'Área do segurado',
@@ -79,13 +61,13 @@ nome_colunas = ['age_of_car', 'age_of_policyholder', 'area_cluster', 'population
 
 # bf = tratarDados(bf)
 numericos = bf.select_dtypes(include=[np.float64, np.int64])
-categoricos = bf.select_dtypes(include=[object])
+categoricos = bf.select_dtypes(include=[np.object])
 
 st.title('Pré-Processamento dos dados do dataset Car-Insurance')
 st.markdown(
     """
     - [Fonte](https://www.kaggle.com/datasets/ifteshanajnin/carinsuranceclaimprediction-classification)
-    - [Dicionário de dados](https://github.com/eduardoesnc/SMD/blob/Streamlit/data/Dicionário%20de%20dados.pdf)
+    - [Dicionário de dados](https://github.com/eduardoesnc/SMD/blob/Streamlit/data/Dicionário%20de%20dados.pbf)
     """, unsafe_allow_html=True
 )
 st.markdown("---")
@@ -99,70 +81,96 @@ st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
 col11, col12 = st.columns(2)
 with col11:
     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Antes</h5>", unsafe_allow_html=True)
-    st.dataframe(df)
+    st.dataframe(bf)
 
 with col12:
     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Depois</h5>", unsafe_allow_html=True)
-    df = df.drop(['policy_id'], axis=1)
-    st.dataframe(df)
+    bf = bf.drop(['policy_id'], axis=1)
+    st.dataframe(bf)
+
+st.markdown("---")
+
+# ______________________________________________Idade do Segurado____________________________________________________________________ #
+
+st.markdown("<h2>Desnormalização da Idade do Segurado</h2>", unsafe_allow_html=True)
+st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
+            A coluna que indica a Idade do Segurado será desnormalizada para permitir uma melhor compreensão dos dados,
+             ajustando-a considerando idades de 0 a 65 anos (valores definidos considerando que a menor idade no dataset representa 18 anos).
+             Vale lembrar que, para utilizar essa coluna em um algoritmo de Machine Learning, utilizaremos a versão
+             normalizada dela. Ao fazer isso, teremos uma visão mais abrangente e precisa dos dados, o que permitirá
+             uma análise mais eficiente e tomada de decisões mais informadas.
+            </p>""", unsafe_allow_html=True)
+A1, A2 = st.columns(2)
+with A1:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Normalizada</h5>", unsafe_allow_html=True)
+    columnsPT = bf['age_of_policyholder']
+    st.dataframe(columnsPT)
+
+with A2:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Desnormalizada</h5>", unsafe_allow_html=True)
+    bf['age_of_policyholder'] = round(bf['age_of_policyholder'] * (18 // bf['age_of_policyholder'].min()) + bf['age_of_policyholder'].min())
+    st.dataframe(bf['age_of_policyholder'])
+
+st.markdown("---")
+
+# ______________________________________________Idade do Carro____________________________________________________________________ #
+
+st.markdown("<h2>Desnormalização da Idade do Carro</h2>", unsafe_allow_html=True)
+st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
+            A coluna que indica a Idade do Carro será desnormalizada para permitir uma melhor compreensão dos dados, ajustando-a
+             considerando idades de 0 a 5 anos (valores definidos considerando a vida útil média de um carro). Vale lembrar que,
+             para utilizar essa coluna em um algoritmo de Machine Learning, utilizaremos a versão normalizada dela. Ao fazer isso,
+             teremos uma visão mais abrangente e precisa dos dados, o que permitirá uma análise mais eficiente e tomada de decisões
+             mais informadas.
+            </p>""", unsafe_allow_html=True)
+A1, A2 = st.columns(2)
+with A1:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Normalizada</h5>", unsafe_allow_html=True)
+    columnsPT = bf['age_of_car']
+    st.dataframe(columnsPT)
+
+with A2:
+    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Desnormalizada</h5>", unsafe_allow_html=True)
+    bf['age_of_car'] = (bf['age_of_car'] * 5)
+    st.dataframe(bf['age_of_car'])
 
 st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-# st.markdown("<h2>Normalização do Tempo de seguro</h2>", unsafe_allow_html=True)
-# st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
-#             A coluna que indica o Tempo de Seguro deve ser normalizada para que seus valores estejam em uma escala comum
-#              e, assim, possamos trabalhar com mais eficiência no algoritmo de Machine Learning.
-#             </p>""", unsafe_allow_html=True)
-# A1, A2 = st.columns(2)
-# with A1:
-#     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Original</h5>", unsafe_allow_html=True)
-#     columnsPT = bf['policy_tenure']
-#     st.dataframe(columnsPT)
+# IREMOS USAR O COMPRIMENTO MESMO
 
-# with A2:
+# st.markdown("<h2>Altura, largura e comprimento para volume</h2>", unsafe_allow_html=True)
+# st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
+#             Pode-se simplificar as colunas de altura, largura e comprimento em uma única coluna, denominada 'Volume'. É 
+#             importante normalizar a coluna Volume para que seus valores estejam em uma escala comum e, assim, possamos 
+#             trabalhar com mais eficiência no algoritmo de Machine Learning.
+#             </p>""", unsafe_allow_html=True)
+
+# B1, B2, B3 = st.columns(3)
+# with B1:
+#     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Original</h5>", unsafe_allow_html=True)
+#     columnsALC = pd.concat([bf['length'], bf['width'], bf['height']], axis=1)
+#     st.dataframe(columnsALC)
+
+# with B2:
+#     # Transformando em apenas uma coluna
+#     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Transformada</h5>", unsafe_allow_html=True)
+#     # Os valores estavam em milímetros
+#     bf['volume'] = np.log(bf.length * bf.width * bf.height * 1e-6)
+#     bf = bf.drop(['length', 'width', 'height'], axis=1)
+#     columnVol = bf['volume']
+#     st.dataframe(columnVol)
+
+# with B3:
+#     # Padronizandos os valores
 #     st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Normalizada</h5>", unsafe_allow_html=True)
-#     policy_df = bf['policy_tenure']
-#     normPolicy = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-#     normPolicy = pd.concat([normPolicy], axis=1)
-#     st.dataframe(normPolicy)
+#     normColumnVol = columnVol
+#     normColumnVol = (normColumnVol - normColumnVol.min()) / (normColumnVol.max() - normColumnVol.min())
+#     normColumnVol = pd.concat([normColumnVol], axis=1)
+#     st.dataframe(normColumnVol)
 
 # st.markdown("---")
-
-# __________________________________________________________________________________________________________________ #
-
-st.markdown("<h2>Altura, largura e comprimento para volume</h2>", unsafe_allow_html=True)
-st.markdown("""<p style="font-size: 16px;text-align: center; margin-top: 0px">
-            Pode-se simplificar as colunas de altura, largura e comprimento em uma única coluna, denominada 'Volume'. É 
-            importante normalizar a coluna Volume para que seus valores estejam em uma escala comum e, assim, possamos 
-            trabalhar com mais eficiência no algoritmo de Machine Learning.
-            </p>""", unsafe_allow_html=True)
-
-B1, B2, B3 = st.columns(3)
-with B1:
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Original</h5>", unsafe_allow_html=True)
-    columnsALC = pd.concat([bf['length'], bf['width'], bf['height']], axis=1)
-    st.dataframe(columnsALC)
-
-with B2:
-    # Transformando em apenas uma coluna
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Transformada</h5>", unsafe_allow_html=True)
-    # Os valores estavam em milímetros
-    bf['volume'] = np.log(bf.length * bf.width * bf.height * 1e-6)
-    bf = bf.drop(['length', 'width', 'height'], axis=1)
-    columnVol = bf['volume']
-    st.dataframe(columnVol)
-
-with B3:
-    # Padronizandos os valores
-    st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Normalizada</h5>", unsafe_allow_html=True)
-    normColumnVol = columnVol
-    normColumnVol = (normColumnVol - normColumnVol.min()) / (normColumnVol.max() - normColumnVol.min())
-    normColumnVol = pd.concat([normColumnVol], axis=1)
-    st.dataframe(normColumnVol)
-
-st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
