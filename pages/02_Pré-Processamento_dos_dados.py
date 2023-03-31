@@ -79,7 +79,7 @@ nome_colunas = ['age_of_car', 'age_of_policyholder', 'area_cluster', 'population
 
 # bf = tratarDados(bf)
 numericos = bf.select_dtypes(include=[np.float64, np.int64])
-categoricos = bf.select_dtypes(include=[np.object])
+categoricos = bf.select_dtypes(include=[object])
 
 st.title('Pré-Processamento dos dados do dataset Car-Insurance')
 st.markdown(

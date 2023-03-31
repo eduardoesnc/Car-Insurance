@@ -306,8 +306,8 @@ st.markdown("---")
 # visualizar a relação entre essas variáveis.
 st.subheader("Análise da relação entre idade do carro e tipo de combustível:")
 
-fig = px.scatter(bf, x='age_of_car', y='fuel_type',
-                 labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
+fig = px.violin(bf, x=['age_of_car'], y='fuel_type', box=True,
+                labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
 st.write(fig)
 
 st.caption('Essa análise é importante para entender a relação entre a idade do carro e o tipo de combustível e como '
