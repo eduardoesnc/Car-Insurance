@@ -38,9 +38,13 @@ def tratarDados(database):
     # Tranformar as colunas largura, tamanho e altura em apenas uma coluna chamada volume
     database['volume'] = np.log(database.length * database.width * database.height * 1e-6)
 
+    # Desnormalizando para entender melhor os dados
+    database['age_of_policyholder'] = round(database['age_of_policyholder'] * (18 // database['age_of_policyholder'].min()) + database['age_of_policyholder'].min())
+    database['age_of_car'] = (database['age_of_car'] * 5)
+
     # Normalizar policy tenure com min max normalization
-    policy_df = database['policy_tenure']
-    database['policy_tenure'] = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
+    # policy_df = database['policy_tenure']
+    # database['policy_tenure'] = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
 
     database['segment'] = database['segment'].replace('Utility', 'Utilitários')
 
@@ -51,7 +55,7 @@ def tratarDados(database):
 
 
 # Criação de array com o nome de todas as colunas para facilitar na criação dos filtros
-dict_nome_colunas = ['Idade do carro normalizada', 'Idade do segurado normalizada', 'Área do segurado',
+dict_nome_colunas = ['Idade do carro em anos', 'Idade do segurado', 'Área do segurado',
                      'Densidade populacional',
                      'Código da fabricante do carro', 'Segmento do carro (A / B1 / B2 / C1 / C2)', 'Modelo do carro',
                      'Tipo de combustível usado no carro', 'Torque máximo gerado pelo carro (Nm@rpm)',
@@ -255,6 +259,20 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
+st.subheader("Análise do tipo de combustível usado pelos carros segurados")
+
+fig = px.histogram(bf, y='fuel_type', labels={'fuel_type': 'Tipo de combustível', 'count': 'Quantidade'})
+st.write(fig)
+
+st.caption('Essa análise é importante para as seguradoras entenderem o perfil dos veículos que estão sendo segurados '
+           'e as tendências de mercado em relação aos tipos de combustível mais utilizados. Isso pode ajudar a '
+           'definir preços mais adequados para as apólices de seguro, bem como a criar políticas e estratégias para '
+           'incentivar a adoção de veículos mais sustentáveis e econômicos em termos de combustível.')
+
+st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
 # um histograma que mostre o número de segurados em cada região ou estado.
 st.subheader("Análise da distribuição geográfica dos segurados:")
 
@@ -288,26 +306,12 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-st.subheader("Análise do tipo de combustível usado pelos carros segurados")
-
-fig = px.histogram(bf, y='fuel_type', labels={'fuel_type': 'Tipo de combustível', 'count': 'Quantidade'})
-st.write(fig)
-
-st.caption('Essa análise é importante para as seguradoras entenderem o perfil dos veículos que estão sendo segurados '
-           'e as tendências de mercado em relação aos tipos de combustível mais utilizados. Isso pode ajudar a '
-           'definir preços mais adequados para as apólices de seguro, bem como a criar políticas e estratégias para '
-           'incentivar a adoção de veículos mais sustentáveis e econômicos em termos de combustível.')
-
-st.markdown("---")
-
-# __________________________________________________________________________________________________________________ #
-
 # Um gráfico de dispersão com a idade do carro no eixo x e o tipo de combustível no eixo y seria uma boa escolha para
 # visualizar a relação entre essas variáveis.
 st.subheader("Análise da relação entre idade do carro e tipo de combustível:")
 
-fig = px.violin(bf, y=['age_of_car'], x='fuel_type', box=True,
-                labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
+fig = px.scatter(bf, x='age_of_car', y='fuel_type',
+                 labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
 st.write(fig)
 
 st.caption('Essa análise é importante para entender a relação entre a idade do carro e o tipo de combustível e como '
@@ -348,7 +352,7 @@ HasOption = Has_dict_colunas.index(HasOption)
 
 # Criando um dataset com apenas a classificação e a coluna desejada
 dfNcap = pd.concat([bf[Has_nome_colunas[HasOption]], bf['ncap_rating']], axis=1)
-dfNcap = dfNcap[dfNcap[Has_nome_colunas[HasOption]] == 'Yes']
+dfNcap = dfNcap[dfNcap[Has_nome_colunas[HasOption]] == True]
 
 # Fazendo a contagem
 dfNcap_count = dfNcap.groupby(['ncap_rating'])[Has_nome_colunas[HasOption]].count().reset_index(
@@ -362,11 +366,16 @@ fig.update_traces(textinfo='percent+label')
 
 st.write(fig)
 
-st.caption('A análise da relação entre a classificação de segurança NCAP e outros recursos de segurança é importante '
-           'para as seguradoras entenderem como essas variáveis podem influenciar no risco de acidentes e no custo '
-           'das apólices. Isso pode ajudar na definição de preços mais adequados e na criação de políticas de '
-           'prevenção de acidentes de trânsito, considerando fatores como a presença de sistemas de segurança e a '
-           'classificação NCAP do veículo.')
+st.markdown("""<p style='font-size: 14px;
+                    font-weight: 550;
+                    margin-top: -50px;
+                    color: #9c9d9f;
+                    text-align: justify'>
+            A análise da relação entre a classificação de segurança NCAP e outros recursos de segurança é importante
+           para as seguradoras entenderem como essas variáveis podem influenciar no risco de acidentes e no custo
+           das apólices. Isso pode ajudar na definição de preços mais adequados e na criação de políticas de
+           prevenção de acidentes de trânsito, considerando fatores como a presença de sistemas de segurança e a
+           classificação NCAP do veículo. """, unsafe_allow_html=True)
 
 st.markdown("---")
 
