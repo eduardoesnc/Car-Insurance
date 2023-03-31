@@ -259,6 +259,10 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
+
+# um histograma que mostre o número de segurados em cada região ou estado.
+st.subheader("Análise da distribuição geográfica dos segurados:")
+
 st.subheader("Análise do tipo de combustível usado pelos carros segurados")
 
 fig = px.histogram(bf, y='fuel_type', labels={'fuel_type': 'Tipo de combustível', 'count': 'Quantidade'})
@@ -273,8 +277,6 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-# um histograma que mostre o número de segurados em cada região ou estado.
-st.subheader("Análise da distribuição geográfica dos segurados:")
 
 fig = px.histogram(bf, x="area_cluster", labels={'area_cluster': 'Área do Segurado', 'count': 'Quantidade'})
 st.write(fig)
@@ -310,8 +312,8 @@ st.markdown("---")
 # visualizar a relação entre essas variáveis.
 st.subheader("Análise da relação entre idade do carro e tipo de combustível:")
 
-fig = px.scatter(bf, x='age_of_car', y='fuel_type',
-                 labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
+fig = px.violin(bf, y=['age_of_car'], x='fuel_type', box=True,
+                labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
 st.write(fig)
 
 st.caption('Essa análise é importante para entender a relação entre a idade do carro e o tipo de combustível e como '
