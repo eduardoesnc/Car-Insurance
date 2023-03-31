@@ -255,20 +255,6 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-st.subheader("Análise do tipo de combustível usado pelos carros segurados")
-
-fig = px.histogram(bf, y='fuel_type', labels={'fuel_type': 'Tipo de combustível', 'count': 'Quantidade'})
-st.write(fig)
-
-st.caption('Essa análise é importante para as seguradoras entenderem o perfil dos veículos que estão sendo segurados '
-           'e as tendências de mercado em relação aos tipos de combustível mais utilizados. Isso pode ajudar a '
-           'definir preços mais adequados para as apólices de seguro, bem como a criar políticas e estratégias para '
-           'incentivar a adoção de veículos mais sustentáveis e econômicos em termos de combustível.')
-
-st.markdown("---")
-
-# __________________________________________________________________________________________________________________ #
-
 # um histograma que mostre o número de segurados em cada região ou estado.
 st.subheader("Análise da distribuição geográfica dos segurados:")
 
@@ -302,11 +288,25 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
+st.subheader("Análise do tipo de combustível usado pelos carros segurados")
+
+fig = px.histogram(bf, y='fuel_type', labels={'fuel_type': 'Tipo de combustível', 'count': 'Quantidade'})
+st.write(fig)
+
+st.caption('Essa análise é importante para as seguradoras entenderem o perfil dos veículos que estão sendo segurados '
+           'e as tendências de mercado em relação aos tipos de combustível mais utilizados. Isso pode ajudar a '
+           'definir preços mais adequados para as apólices de seguro, bem como a criar políticas e estratégias para '
+           'incentivar a adoção de veículos mais sustentáveis e econômicos em termos de combustível.')
+
+st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
 # Um gráfico de dispersão com a idade do carro no eixo x e o tipo de combustível no eixo y seria uma boa escolha para
 # visualizar a relação entre essas variáveis.
 st.subheader("Análise da relação entre idade do carro e tipo de combustível:")
 
-fig = px.violin(bf, x=['age_of_car'], y='fuel_type', box=True,
+fig = px.violin(bf, y=['age_of_car'], x='fuel_type', box=True,
                 labels={'age_of_car': 'Idade do carro', 'fuel_type': 'Tipo de combustível'})
 st.write(fig)
 
