@@ -6,13 +6,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 import pickle
 
-from xgboost import XGBClassifier
-
 def readData():
     dataset = pd.read_csv('./data/train.csv')
-    return dataset
+    datasetTreino = pd.read_csv('./data/test.csv')
+    sampleSub = pd.read_csv('./data/sample_submission.csv')
+    return dataset, datasetTreino, sampleSub
 
-df = readData()
+df, dfPlus, sample = readData()
 
 def tratarDados(database):
     # Apagar coluna policy_id, já que são apenas IDs
@@ -49,69 +49,64 @@ def tratarDados(database):
     database['transmission_type'] = database['transmission_type'].replace({'Automatic': 0, 'Manual': 1})
     database['transmission_type'] = database['transmission_type'].astype('float64')
     
+    database.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaço necessário para curva',
+                        'age_of_car': 'Idade do carro', 'volume': 'Volume', 'population_density': 'Densidade populacional',
+                        'area_cluster': 'Área do segurado', 'age_of_policyholder': 'Idade do segurado',
+                        'engine_type': 'Tipo do motor', 'model': 'Modelo', 'gross_weight': 'Peso máximo',
+                        'displacement': 'cilindradas (cc)', 'max_torque': 'Torque máximo', 'max_power': 'Força máxima',
+                        'segment': 'Segmento', 'is_adjustable_steering': 'Volante ajustável?',
+                        'cylinder': 'Quantidade de cilindros', 'is_front_fog_lights': 'Tem luz de neblina?',
+                        'is_brake_assist': 'Tem assitência de freio', 'length': 'Comprimento',
+                        'is_driver_seat_height_adjustable': 'Banco do motorista é ajustável?',
+                        'fuel_type': 'Tipo do combustível', 'is_parking_camera': 'Tem câmera de ré',
+                        'transmission_type': 'Tipo de transmissão'}, inplace=True)
+
     return database
 
 df = tratarDados(df)
 
-df.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaço necessário para curva',
-                   'age_of_car': 'Idade do carro', 'volume': 'Volume', 'population_density': 'Densidade populacional',
-                   'area_cluster': 'Área do segurado', 'age_of_policyholder': 'Idade do segurado',
-                   'engine_type': 'Tipo do motor', 'model': 'Modelo', 'gross_weight': 'Peso máximo',
-                   'displacement': 'cilindradas (cc)', 'max_torque': 'Torque máximo', 'max_power': 'Força máxima',
-                   'segment': 'Segmento', 'is_adjustable_steering': 'Volante ajustável?',
-                   'cylinder': 'Quantidade de cilindros', 'is_front_fog_lights': 'Tem luz de neblina?',
-                   'is_brake_assist': 'Tem assitência de freio',
-                   'is_driver_seat_height_adjustable': 'Banco do motorista é ajustável?',
-                   'fuel_type': 'Tipo do combustível', 'is_parking_camera': 'Tem câmera de ré',
-                   'transmission_type': 'Tipo de transmissão', 'length': 'Comprimento'}, inplace=True)
-
-# Selecionando as colunas Comprimento, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
-colsSelecionadasRF = ['Comprimento', 'Tempo de seguro', 'Idade do carro', 'Idade do segurado','Área do segurado', 'Modelo']
-
 # Criando dataframe temporário apenas com as colunas selecionadas
-tempDF = df[colsSelecionadasRF]
+dfRF = df.copy()
+dfPlusRF = dfPlus.copy()
+
+sample = sample.drop(['policy_id'], axis=1)
+
+dfPlusRF = pd.concat([pd.DataFrame(dfPlusRF), pd.DataFrame(sample)], axis=1)
+
+dfPlusRF = tratarDados(dfPlusRF)
+
+dfRF = pd.concat([pd.DataFrame(dfRF), pd.DataFrame(dfPlusRF)], axis = 0)
+
+# Selecionando as colunas Tempo de seguro, Idade do carro, Idade do segurado, Área do segurado, Comprimento, Modelo.
+colsSelecionadas = ['Tempo de seguro', 'Idade do carro', 'Idade do segurado', 'Área do segurado', 'Comprimento', 'Modelo']
 
 # Selecionando as colunas Categóricas
-categorical_cols = tempDF.select_dtypes(include=['object']).columns
+categorical_cols = dfRF.select_dtypes(include=['object']).columns
 
 # Convertendo as colunas categóricas em variáveis de indicação
-dfRF = pd.get_dummies(tempDF, columns=categorical_cols)
+dfRF = pd.get_dummies(dfRF, columns=categorical_cols)
 
-# Mostrar as variáveis de indicação criadas
-dfRF.info(verbose = True)
-
-# Atribuindo as colunas selecionadas a X
-x = dfRF
+# Retirando a coluna alvo
+x = dfRF.drop(['is_claim'], axis = 1)
 
 # Atribuindo a coluna alvo a Y
-y = df["is_claim"]
+y = dfRF["is_claim"]
 
 # Fazendo a reamostragem para equilibrar os valores de Y
 smt = SMOTEENN()
 X_res, y_res = smt.fit_resample(x, y)
-y_res.value_counts()
+
+#Separando apenas as colunas que iremos utilizar
+X_res = X_res[colsSelecionadas]
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.20, random_state = 30)
+x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
 
 # Inicializando o algoritmo Random Forest
 classifier = RandomForestClassifier()
- 
+
 #  Construindo uma 'floreste de árvores' da parte de treino
-classifier.fit(x_train.values,y_train)
-
-# Realizando as previsões
-preds = classifier.predict(x_test.values)
-
-print(classification_report(y_test, preds))
-
-cm = confusion_matrix(y_test, preds)
-print(cm)
-
-print(preds)
-print(x_test.values)
-
-print(classifier.feature_importances_)
+classifier.fit(x_train,y_train)
 
 with open("model.pkl", "wb") as f:
      pickle.dump(classifier, f)

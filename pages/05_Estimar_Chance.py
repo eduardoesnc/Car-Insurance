@@ -19,7 +19,7 @@ st.set_page_config(
 
 st.markdown("""<h1 style='text-align: center; margin-top: -60px'>Realizar Estimativa</h1> <br>""", unsafe_allow_html=True)
 
-# comprimento, Tempo de seguro, Idade do carro, Área do segurado, Idade do segurado, Modelo.
+# Tempo de seguro, Idade do carro, Idade do segurado, Área do segurado, Comprimento, Modelo.
 
 A1, A2, A3 = st.columns(3)
 
@@ -40,17 +40,12 @@ with A2:
                     Ex.: 0,5 representa 6 meses</p> """, unsafe_allow_html=True)
 
 with A3: 
-    idadeSegurado = st.number_input('Idade do Segurado em anos:')
-    st.markdown("""<p style='font-size: 14px;
-                    font-weight: 550;
-                    margin-top: -15px;
-                    color: #9c9d9f;'>
-                    Ex.: 0,5 representa 6 meses</p> """, unsafe_allow_html=True)
+    idadeSegurado = st.number_input('Idade do Segurado em anos:', value=0)
 
 B1, B2, B3 = st.columns(3)
 
 with B1: 
-    comprimento = st.number_input('Comprimento em metros:', key='comprimentoInput')
+    comprimento = st.number_input('Comprimento em metros:')
     comprimento = comprimento * 1000 # Transformando de metros para milímetros
 
 with B2:
@@ -64,8 +59,8 @@ with B3:
 
     modeloCarro = st.selectbox('Modelo do Carro', modeloCarroList)
 
-def make_prediction(comprimento,tempoSeguro, idadeCarro, 
-                    idadeSegurado, areaSegurado, modeloCarro):
+def make_prediction(tempoSeguro, idadeCarro, idadeSegurado,
+                    areaSegurado, comprimento, modeloCarro):
     count = 0
     for i in areaSeguradoList:
         if i == areaSegurado:
@@ -80,19 +75,20 @@ def make_prediction(comprimento,tempoSeguro, idadeCarro,
 
     with open("model.pkl", "rb") as f:
         clf  = pickle.load(f)
-        preds = clf.predict([[comprimento,tempoSeguro, idadeCarro, 
-                    idadeSegurado, areaSeguradoInt, modeloCarroInt]])
+        # Tempo de seguro, Idade do carro, Idade do segurado, Área do segurado, Comprimento, Modelo.
+        preds = clf.predict([[tempoSeguro, idadeCarro, 
+                    idadeSegurado, areaSeguradoInt, comprimento, modeloCarroInt]])
     return preds
 
 st.markdown("""<br>""", unsafe_allow_html=True)
 
 if st.button("Estimar"):
-    results = make_prediction(comprimento,tempoSeguro, idadeCarro, idadeSegurado, areaSegurado, modeloCarro)
+    results = make_prediction(tempoSeguro, idadeCarro, idadeSegurado, areaSegurado, comprimento, modeloCarro)
     st.markdown("""<br>""", unsafe_allow_html=True)
     if results == 1:
-        st.error("Grande chance de reivindicar o seguro")
+        st.error("Grande chance de reivindicar o seguro dentro dos próximos 6 meses")
     else:
-        st.success("Pouca chance de reivindicar o seguro")
+        st.success("Pouca chance de reivindicar o seguro dentro dos próximos 6 meses")
         
 st.caption('Apenas realizamos estimativas')
 
