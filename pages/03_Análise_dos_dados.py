@@ -239,26 +239,6 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-st.subheader("Análise da dispersão entre a idade do segurado e a idade do carro")
-
-# Restringindo para apenas aqueles em que o seguro foi ativado
-df = bf[bf['is_claim'] == 1]
-# Criando o gráfico com a linha de tendência
-fig = px.scatter(df, x='age_of_car', y='age_of_policyholder', trendline='ols',
-                 labels={'age_of_car': 'Idade do carro', 'age_of_policyholder': 'Idade do segurado'})
-
-# OBS: Caso não estiver a aparecer o gráfico tenta colocar "pip install statsmodels" no comando e vê se vai
-st.write(fig)
-
-st.caption('A análise da dispersão entre a idade do segurado e a idade do carro é importante porque permite entender '
-           'a relação entre essas variáveis e identificar se há uma tendência de acidentes com carros mais antigos '
-           'conduzidos por motoristas mais jovens. Essa análise auxilia na avaliação do risco de sinistros em carros '
-           'mais antigos e ajuda a definir políticas mais efetivas de renovação da frota e manutenção preventiva.')
-
-st.markdown("---")
-
-# __________________________________________________________________________________________________________________ #
-
 # um histograma que mostre o número de segurados em cada região ou estado.
 st.subheader("Análise da distribuição geográfica dos segurados:")
 
