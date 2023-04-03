@@ -359,23 +359,23 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-# # Botão para página de Machine Learning
-# st.markdown("""
-#     <br><br><br><br>
-#     <div style="text-align: center; margin-top: 60px;">
-#     <a href="/Machine_Learning" target="_self"
-#     style="text-decoration: none;
-#             color: white;
-#             font-size: 18px;
-#             font-weight: 550;
-#             background: rgb(243,68,55);
-#             background: linear-gradient(156deg, rgba(243,68,55,1) 30%, rgba(249,170,61,1) 70%);
-#             padding: 15px 40px;
-#             border-radius: 8px;">
-#     Machine Learning
-#     </a>
-#     </div>
-#     """, unsafe_allow_html=True)
+## Botão para página de Machine Learning
+st.markdown("""
+    <br><br>
+    <div style="text-align: center; margin-top: 60px;">
+    <a href="/Machine_Learning" target="_self"
+    style="text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 550;
+            background: rgb(243,68,55);
+            background: linear-gradient(156deg, rgba(243,68,55,1) 30%, rgba(249,170,61,1) 70%);
+            padding: 15px 98px;
+            border-radius: 8px;">
+    Machine Learning
+    </a>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Centralizar todos os elementos da página
 st.markdown("""
