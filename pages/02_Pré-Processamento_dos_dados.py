@@ -232,7 +232,7 @@ st.markdown("---")
 
 # Botão para página de análise de dados
 st.markdown("""
-    <br><br><br><br>
+    <br><br>
     <div style="text-align: center; margin-top: 60px;">
     <a href="/Análise_dos_dados" target="_self"
     style="text-decoration: none;
@@ -241,7 +241,7 @@ st.markdown("""
             font-weight: 550;
             background: rgb(243,68,55);
             background: linear-gradient(156deg, rgba(243,68,55,1) 30%, rgba(249,170,61,1) 70%);
-            padding: 15px 40px;
+            padding: 15px 48px;
             border-radius: 8px;">
     Análise exploratória dos dados
     </a>
