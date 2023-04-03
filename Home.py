@@ -130,6 +130,7 @@ with C3:
     st.metric('Quantidade de colunas multivaloradas', 0, delta=None, delta_color="normal",
               help="O dataset não apresenta colunas multivaloradas", )
 
+# Botão para página de pré-processamento
 st.markdown("""
     <div style="text-align: center; margin-top: 60px;">
     <a href="/Pré-Processamento_dos_dados" target="_self"
@@ -139,13 +140,15 @@ st.markdown("""
             font-weight: 550;
             background: rgb(243,68,55);
             background: linear-gradient(156deg, rgba(249,170,61,1) 30%, rgba(243,68,55,1) 70%);
-            padding: 15px 40px;
-            border-radius: 8px;">
+            padding: 15px 50px;
+            border-radius: 8px;
+            ">
     Pré-Processamento dos dados
     </a>
     </div>
     """, unsafe_allow_html=True)
 
+# Botão para página de análise de dados
 st.markdown("""
     <div style="text-align: center; margin-top: 60px;">
     <a href="/Análise_dos_dados" target="_self"
@@ -155,9 +158,43 @@ st.markdown("""
             font-weight: 550;
             background: rgb(243,68,55);
             background: linear-gradient(156deg, rgba(243,68,55,1) 30%, rgba(249,170,61,1) 70%);
-            padding: 15px 40px;
+            padding: 15px 48px;
             border-radius: 8px;">
     Análise exploratória dos dados
+    </a>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Botão para página de Machine Learning
+st.markdown("""
+    <div style="text-align: center; margin-top: 60px;">
+    <a href="/Machine_Learning" target="_self"
+    style="text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 550;
+            background: rgb(243,68,55);
+            background: linear-gradient(156deg, rgba(249,170,61,1) 30%, rgba(243,68,55,1) 70%);
+            padding: 15px 98px;
+            border-radius: 8px;">
+    Machine Learning
+    </a>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Botão para página de Estimar Chance
+st.markdown("""
+    <div style="text-align: center; margin-top: 60px;">
+    <a href="/Estimar_Chance" target="_self"
+    style="text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 550;
+            background: rgb(243,68,55);
+            background: linear-gradient(156deg, rgba(243,68,55,1) 30%, rgba(249,170,61,1) 70%);
+            padding: 15px 40px;
+            border-radius: 8px;">
+    Estimar Chance de Reivindicação
     </a>
     </div>
     """, unsafe_allow_html=True)
