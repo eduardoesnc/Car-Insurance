@@ -42,13 +42,9 @@ def tratarDados(database):
     database['age_of_policyholder'] = round(database['age_of_policyholder'] * (18 // database['age_of_policyholder'].min()) + database['age_of_policyholder'].min())
     database['age_of_car'] = (database['age_of_car'] * 5)
 
-    # Normalizar policy tenure com min max normalization
-    # policy_df = database['policy_tenure']
-    # database['policy_tenure'] = (policy_df - policy_df.min()) / (policy_df.max() - policy_df.min())
-
     database['segment'] = database['segment'].replace('Utility', 'Utilitários')
 
-    database = database.replace({ "No" : False , "Yes" : True,  "Petrol" : "Gasolina" })
+    database = database.replace({ "No" : False , "Yes" : True,  "Petrol" : "Gasolina", "Automatic": "Automático" })
 
 
     return database
@@ -270,11 +266,10 @@ st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
 
-# Um gráfico de dispersão com a densidade populacional no eixo x e a área do segurado no eixo y seria uma boa escolha
-# para visualizar a relação entre essas variáveis.
 st.subheader("Análise da relação entre a densidade populacional e a área do segurado:")
 
-fig = px.scatter(bf, x='area_cluster', y='population_density',
+unique_data = bf[['area_cluster', 'population_density']].drop_duplicates()
+fig = px.bar(unique_data, x='area_cluster', y='population_density',
                  labels={'area_cluster': 'Área do Segurado', 'population_density': 'Densidade Populacional'})
 st.write(fig)
 
@@ -283,6 +278,41 @@ st.caption('A análise da relação entre densidade populacional e área do segu
            'além de contribuir para a prevenção de acidentes e roubo de veículos em áreas de maior risco. Essa '
            'análise pode ser útil para entender a demanda por seguros em diferentes áreas geográficas e as possíveis '
            'influências dessas variáveis no risco de sinistro.')
+
+st.markdown("---")
+
+# __________________________________________________________________________________________________________________ #
+
+st.subheader("Análise da relação entre o modelo e algumas características técnicas do carro:")
+
+A1, A2 = st.columns(2)
+
+with A1:
+    fig = px.scatter(bf, x='engine_type', y='model', width=600, height= 400,
+                    labels={'model': 'Modelo', 'engine_type': 'Tipo do motor'})
+    st.write(fig)
+
+with A2: 
+    unique_data = bf[['model', 'fuel_type']].drop_duplicates()
+    fig = px.scatter(unique_data, x='fuel_type', y='model', width=450, height= 400,
+                    labels={'model': 'Modelo', 'fuel_type': 'Tipo do combustível'})
+    st.write(fig)
+
+A1, A2 = st.columns(2)
+
+with A1:
+    fig = px.scatter(bf, x='segment', y='model', width=400, height= 400,
+                    labels={'model': 'Modelo', 'segment': 'Segmento do carro'})
+    st.write(fig)
+
+with A2: 
+    unique_data = bf[['model', 'transmission_type']].drop_duplicates()
+    fig = px.scatter(unique_data, x='transmission_type', y='model', width=300, height= 400,
+                    labels={'model': 'Modelo', 'transmission_type': 'Tipo do câmbio'})
+    st.write(fig)
+
+st.caption("""A análise da relação entre o modelo e algumas características técnicas do carro é importante para poder 
+              confirmar quais variáveis a gente pode simplificar na hora de desenvolver o Machine Learning.""")
 
 st.markdown("---")
 
