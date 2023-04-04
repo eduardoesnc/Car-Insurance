@@ -238,6 +238,22 @@ st.caption('A análise de dispersão da probabilidade de sinistro pela idade do 
 st.markdown("---")
 
 # __________________________________________________________________________________________________________________ #
+# Sugestão: Análise dos veículos com chance de sinistro pela densidade populacional
+st.subheader("Análise de Probabilidade de Sinistro pela densidade populacional")
+
+# Selecionando apenas o grupo relevante
+df = bf[bf['is_claim'] == 1][['population_density', 'is_claim']]
+
+# Plotando um gráfico violin
+fig = px.violin(data_frame=df, y='population_density', box=True,
+                points='all', labels={'population_density': 'densidade populacional'})
+
+st.write(fig)
+
+st.caption('A análise de dispersão da probabilidade de sinistro pela densidade populacional para verificar quais regiões tem'
+           'uma maior probabilidade de sinistros.')
+
+st.markdown("---")
 
 # um histograma que mostre o número de segurados em cada região ou estado.
 st.subheader("Análise da distribuição geográfica dos segurados:")
