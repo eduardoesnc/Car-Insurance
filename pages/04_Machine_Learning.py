@@ -27,6 +27,7 @@ from sklearn import metrics
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.svm import SVC
 
 
 st.set_page_config(
@@ -432,6 +433,53 @@ with A2:
 
 #    st.write(cm_fig)
 
+# -----------------------------------------------------SVM - Support Vector Machine ----------------------------------------------------- #
+
+# Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
+#x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
+
+#Instanciando o classificador SVM:
+#classifierSvm = SVC(kernel = 'rbf', gamma = 4)
+#classifierSvm.fit(x_train,y_train)
+
+# Realizando as previsões com o SVM
+#prev_svm = classifierSvm.predict(x_test)
+
+# Criando o relatório com as principais métricas da classificação
+#report = classification_report(y_test, prev_svm, output_dict=True)
+#df_report = pd.DataFrame(report).transpose()
+
+#st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
+
+#A1, A2 = st.columns(2)
+#cm = confusion_matrix(y_test, prev_svm)
+#print(cm)
+
+#with A1:
+#   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão</h5>", unsafe_allow_html=True)
+#   categories1 = ['Neg.', 'Pos.']
+#   categories2 = ['Neg.', 'Pos.']
+
+#   heatmap_fig = px.imshow(cm, x=categories1, y=categories2, color_continuous_scale='rdylgn')
+#   heatmap_fig.update_layout(
+#        xaxis={'title': 'Valores Preditos'},
+#        yaxis={'title': 'Valores Reais'},
+#       width=500, height=500
+#   )
+
+#   st.write(heatmap_fig)
+
+#with A2:
+#   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão</h5>", unsafe_allow_html=True)
+#   cm_flat = cm.flatten()
+#   cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
+#   cm_fig.update_traces(textinfo='percent+label')
+#   cm_fig.update_layout(showlegend=False)
+
+#    st.write(cm_fig)
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------#
 
 st.markdown("---")
 # Botão para página de Estimar Chance
