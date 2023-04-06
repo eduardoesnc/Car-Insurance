@@ -72,7 +72,7 @@ dict_nome_colunas = ['Idade do carro em anos', 'Idade do segurado', 'Área do se
                      'Tem luz indicativa de problemas no motor?', 'Tem sistema de alerta de velocidade?',
                      'Classificação de segurança pela NCAP (de 0 a 5)']
 nome_colunas = ['age_of_car', 'age_of_policyholder', 'area_cluster', 'population_density', 'make', 'segment',
-                'model', 'fuel_type', 'max_torque_Nm', 'max_power_bhp', 'engine_type', 'airbags', 'is_esc',
+                'model', 'fuel_type', 'max_torque', 'max_power', 'engine_type', 'airbags', 'is_esc',
                 'is_adjustable_steering', 'is_tpms',
                 'is_parking_sensors', 'is_parking_camera', 'rear_brakes_type', 'displacement', 'cylinder',
                 'transmission_type', 'gear_box', 'steering_type',
@@ -190,9 +190,7 @@ st.markdown("---")
 
 st.subheader("Análise de Probabilidade de Sinistro por Segmento do Veículo")
 
-# Carregando o dataset
-# df = pd.read_csv('./data/train.csv')
-df = bf
+df = bf.copy()
 
 # Selecionando apenas as colunas relevantes
 df = df[['segment', 'is_claim']]
@@ -285,31 +283,48 @@ st.markdown("---")
 
 st.subheader("Análise da relação entre o modelo e algumas características técnicas do carro:")
 
-A1, A2 = st.columns(2)
+# Criação de array com o nome de todas as colunas para facilitar na criação dos filtros
+dict_tecnicas_colunas = ['Código da fabricante do carro', 'Segmento do carro (A / B1 / B2 / C1 / C2)',
+                     'Tipo de combustível usado no carro', 'Torque máximo gerado pelo carro (Nm@rpm)',
+                     'Força máxima gerada pelo carro (bhp@rpm)',
+                     'Tipo de motor usado pelo carro', 'Número de airbags instalados no carro',
+                     'Tem controle de estabilização eletrônica?',
+                     'O volante é ajustável?', 'Tem sistema de monitoramento da pressão do pneu?',
+                     'Tem sensores de ré?',
+                     'Tem câmera de ré?', 'Tipo de freio usado no carro', 'Cilindradas do motor (cc)',
+                     'Quantidade de cilindros do carro',
+                     'Tipo de transmissão do carro', 'Quantidade de marchas do carro', 'Tipo de direção do carro',
+                     'Espaço necessário pro carro fazer uma certa curva', 'Comprimento do carro', 'Largura do carro', 'Altura do carrro',
+                     'Volume do carro', 'Peso máximo suportado pelo carro (Kg)',
+                     'Tem farol de neblina?', 'Tem limpador de vidro traseiro?', 'Tem desembaçador de vidro traseiro?',
+                     'Tem assistência de freio?',
+                     'Tem trava elétrica de porta?', 'Tem direção hidráulica?', 'O acento do motorista é ajustável?',
+                     'Tem espelho de retrovisor traseiro?',
+                     'Tem luz indicativa de problemas no motor?', 'Tem sistema de alerta de velocidade?',
+                     'Classificação de segurança pela NCAP (de 0 a 5)']
+tecnicas_colunas = ['make', 'segment',
+                'fuel_type', 'max_torque', 'max_power', 'engine_type', 'airbags', 'is_esc',
+                'is_adjustable_steering', 'is_tpms',
+                'is_parking_sensors', 'is_parking_camera', 'rear_brakes_type', 'displacement', 'cylinder',
+                'transmission_type', 'gear_box', 'steering_type',
+                'turning_radius', 'length', 'width', 'height', 'volume', 'gross_weight', 'is_front_fog_lights', 'is_rear_window_wiper',
+                'is_rear_window_washer',
+                'is_rear_window_defogger', 'is_brake_assist', 'is_power_door_locks', 'is_central_locking',
+                'is_power_steering', 'is_driver_seat_height_adjustable', 'is_day_night_rear_view_mirror',
+                'is_ecw', 'is_speed_alert', 'ncap_rating', 'is_claim']
 
-with A1:
-    fig = px.scatter(bf, x='engine_type', y='model', width=600, height= 400,
-                    labels={'model': 'Modelo', 'engine_type': 'Tipo do motor'})
-    st.write(fig)
+optionTecnica = st.selectbox('',
+    dict_tecnicas_colunas)
 
-with A2: 
-    unique_data = bf[['model', 'fuel_type']].drop_duplicates()
-    fig = px.scatter(unique_data, x='fuel_type', y='model', width=450, height= 400,
-                    labels={'model': 'Modelo', 'fuel_type': 'Tipo do combustível'})
-    st.write(fig)
+optionTecnica = dict_tecnicas_colunas.index(optionTecnica)
 
-A1, A2 = st.columns(2)
-
-with A1:
-    fig = px.scatter(bf, x='segment', y='model', width=400, height= 400,
-                    labels={'model': 'Modelo', 'segment': 'Segmento do carro'})
-    st.write(fig)
-
-with A2: 
-    unique_data = bf[['model', 'transmission_type']].drop_duplicates()
-    fig = px.scatter(unique_data, x='transmission_type', y='model', width=300, height= 400,
-                    labels={'model': 'Modelo', 'transmission_type': 'Tipo do câmbio'})
-    st.write(fig)
+tecData = bf.copy()
+tecData = tecData.replace({ False : "Não" , True: "Sim"})
+tecData = tecData.drop_duplicates()
+fig = px.scatter(tecData, x=tecnicas_colunas[optionTecnica], y='model',
+                    labels={'model': 'Modelo', tecnicas_colunas[optionTecnica]: dict_tecnicas_colunas[optionTecnica],
+                            'true': 'Sim', 'false' : 'Não'})
+st.write(fig)
 
 st.caption("""A análise da relação entre o modelo e algumas características técnicas do carro é importante para poder 
               confirmar quais variáveis a gente pode simplificar na hora de desenvolver o Machine Learning.""")
