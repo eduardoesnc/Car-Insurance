@@ -43,7 +43,10 @@ st.set_page_config(
     },
     initial_sidebar_state='collapsed'
 )
-
+#Definindo a semente aleatória para garantir que os resultados sejam reprodutíveis
+seed = 42
+#Definindo a taxa de teste
+test_ratio = 0.2
 
 # Leitura e tratamento dos dados
 @st.cache_data
@@ -89,7 +92,7 @@ def tratarDados(database):
 
     database['transmission_type'] = database['transmission_type'].replace({'Automatic': 0, 'Manual': 1})
     database['transmission_type'] = database['transmission_type'].astype('float64')
-    
+
     database.rename(columns={'policy_tenure': 'Tempo de seguro', 'turning_radius': 'Espaço necessário para curva',
                         'age_of_car': 'Idade do carro', 'volume': 'Volume', 'population_density': 'Densidade populacional',
                         'area_cluster': 'Área do segurado', 'age_of_policyholder': 'Idade do segurado',
@@ -201,7 +204,7 @@ X_res, y_res = smt.fit_resample(x, y)
 X_res = X_res[colsSelecionadas]
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
+x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=test_ratio, random_state=seed)
 
 # Inicializando o algoritmo Random Forest
 classifier = RandomForestClassifier()
@@ -211,7 +214,7 @@ classifier.fit(x_train,y_train)
 """)
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
+x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=test_ratio, random_state=seed)
 
 # Realizando as previsões
 preds = classifier.predict(x_test)
@@ -436,7 +439,7 @@ with A2:
 # -----------------------------------------------------SVM - Support Vector Machine ----------------------------------------------------- #
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-#x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
+#x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=test_ratio, random_state=seed)
 
 #Instanciando o classificador SVM:
 #classifierSvm = SVC(kernel = 'rbf', gamma = 4)
@@ -483,7 +486,7 @@ with A2:
 
 # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
 # Manter essa linha comentada se for fazer comparação com outro modelo, assim eles usaram a mesma base de treino e teste
-# x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2)
+# x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=test_ratio, random_state=seed)
 
 # Instanciando o classificador XGBoost e ajustando o modelo aos dados de treinamento
 xgb_classifier = XGBClassifier(learning_rate = 1)
