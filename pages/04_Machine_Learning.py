@@ -484,57 +484,57 @@ with A2:
 
 #------------------------------------------------------XGBoost Classifier------------------------------------------------------#
 
-# Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
-# Manter essa linha comentada se for fazer comparação com outro modelo, assim eles usaram a mesma base de treino e teste
-# x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=test_ratio, random_state=seed)
+# # Dividindo o dataset para treino e para teste, utilizando 20% do dataset para teste
+# # Manter essa linha comentada se for fazer comparação com outro modelo, assim eles usaram a mesma base de treino e teste
+# # x_train, x_test, y_train, y_test = train_test_split(X_res, y_res, test_size=test_ratio, random_state=seed)
 
-# Instanciando o classificador XGBoost e ajustando o modelo aos dados de treinamento
-xgb_classifier = XGBClassifier(learning_rate = 1)
-xgb_classifier.fit(x_train, y_train)
+# # Instanciando o classificador XGBoost e ajustando o modelo aos dados de treinamento
+# xgb_classifier = XGBClassifier(learning_rate = 1)
+# xgb_classifier.fit(x_train, y_train)
 
-# Realizando as previsões com o XGBoost
-prev_xgb = xgb_classifier.predict(x_test)
+# # Realizando as previsões com o XGBoost
+# prev_xgb = xgb_classifier.predict(x_test)
 
-# Criando o relatório com as principais métricas da classificação
-report = classification_report(y_test, prev_xgb, output_dict=True)
-df_report = pd.DataFrame(report).transpose()
+# # Criando o relatório com as principais métricas da classificação
+# report = classification_report(y_test, prev_xgb, output_dict=True)
+# df_report = pd.DataFrame(report).transpose()
 
-st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
+# st.table(df_report.style.format({'precision': '{:.2f}', 'recall': '{:.2f}', 'f1-score': '{:.2f}', 'support': '{:.2f}'}))
 
-# Feature Importance
-importance = xgb_classifier.feature_importances_
-feature_importance = pd.DataFrame({'Feature': x_train.columns, 'Importance': importance})
-feature_importance = feature_importance.sort_values('Importance', ascending=True).reset_index(drop=True)
-feature_importance = feature_importance.tail(15)
-print(feature_importance)
-fig = px.bar(feature_importance, x='Importance', y='Feature', title='Feature Importance')
+# # Feature Importance
+# importance = xgb_classifier.feature_importances_
+# feature_importance = pd.DataFrame({'Feature': x_train.columns, 'Importance': importance})
+# feature_importance = feature_importance.sort_values('Importance', ascending=True).reset_index(drop=True)
+# feature_importance = feature_importance.tail(15)
+# print(feature_importance)
+# fig = px.bar(feature_importance, x='Importance', y='Feature', title='Feature Importance')
 
-st.write(fig)
+# st.write(fig)
 
-A1, A2 = st.columns(2)
-cm = confusion_matrix(y_test, prev_xgb)
-print(cm)
+# A1, A2 = st.columns(2)
+# cm = confusion_matrix(y_test, prev_xgb)
+# print(cm)
 
-with A1:
-  st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão</h5>", unsafe_allow_html=True)
-  categories1 = ['Neg.', 'Pos.']
-  categories2 = ['Neg.', 'Pos.']
+# with A1:
+#   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Matriz de confusão</h5>", unsafe_allow_html=True)
+#   categories1 = ['Neg.', 'Pos.']
+#   categories2 = ['Neg.', 'Pos.']
 
-  heatmap_fig = px.imshow(cm, x=categories1, y=categories2, color_continuous_scale='rdylgn')
-  heatmap_fig.update_layout(
-       xaxis={'title': 'Valores Preditos'},
-       yaxis={'title': 'Valores Reais'},
-      width=500, height=500
-  )
-  st.write(heatmap_fig)
+#   heatmap_fig = px.imshow(cm, x=categories1, y=categories2, color_continuous_scale='rdylgn')
+#   heatmap_fig.update_layout(
+#        xaxis={'title': 'Valores Preditos'},
+#        yaxis={'title': 'Valores Reais'},
+#       width=500, height=500
+#   )
+#   st.write(heatmap_fig)
 
-with A2:
-  st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão</h5>", unsafe_allow_html=True)
-  cm_flat = cm.flatten()
-  cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
-  cm_fig.update_traces(textinfo='percent+label')
-  cm_fig.update_layout(showlegend=False)
-  st.write(cm_fig)
+# with A2:
+#   st.markdown("<h5 style='text-align: center;margin-bottom: 0px;'>Pizza da matriz de confusão</h5>", unsafe_allow_html=True)
+#   cm_flat = cm.flatten()
+#   cm_fig = px.pie(values=cm_flat, names=['Verdadeiro Neg.','Falso Pos.','Falso Neg.','Verdadeiro Pos.'])
+#   cm_fig.update_traces(textinfo='percent+label')
+#   cm_fig.update_layout(showlegend=False)
+#   st.write(cm_fig)
 
 #-------------------------------------------------------------------------------------------------------------------------------------#
 
